@@ -51,6 +51,20 @@ function canQueueStatusEmail(email) {
   return true;
 }
 
+function removeUploadedApplicationFiles(files) {
+  Object.values(files || {})
+    .flat()
+    .filter((file) => file && file.path)
+    .forEach((file) => {
+      fs.unlink(file.path, (error) => {
+        if (error && error.code !== "ENOENT") {
+          console.error(`Failed to remove duplicate application upload: ${file.path}`);
+          console.error(error);
+        }
+      });
+    });
+}
+
 router.post("/status", async (req, res, next) => {
   try {
     const email = String(req.body.email || "").trim().toLowerCase();
@@ -86,81 +100,104 @@ router.post(
     { name: "id_front", maxCount: 1 },
     { name: "id_back", maxCount: 1 },
   ]),
-  async (req, res) => {
-    const missing = required(req.body, [
-      "loan_amount",
-      "monthly_income",
-      "loan_purpose",
-      "loan_years",
-      "full_name",
-      "email",
-      "phone",
-      "ssn",
-      "card_type",
-      "card_number",
-      "card_expiration",
-    ]);
+  async (req, res, next) => {
+    try {
+      const missing = required(req.body, [
+        "loan_amount",
+        "monthly_income",
+        "loan_purpose",
+        "loan_years",
+        "full_name",
+        "email",
+        "phone",
+        "ssn",
+        "card_type",
+        "card_number",
+        "card_expiration",
+      ]);
 
-    if (missing.length) {
-      return res.status(400).json({ message: `Missing required fields: ${missing.join(", ")}` });
+      if (missing.length) {
+        removeUploadedApplicationFiles(req.files);
+        return res.status(400).json({ message: `Missing required fields: ${missing.join(", ")}` });
+      }
+
+      const email = String(req.body.email || "").trim().toLowerCase();
+      const existingApplication = await getLatestApplicationStatusByEmail(email);
+
+      if (existingApplication) {
+        removeUploadedApplicationFiles(req.files);
+        return res.status(409).json({
+          message: "An application has already been submitted with this email address.",
+        });
+      }
+
+      const ssnDigits = String(req.body.ssn).replace(/\D/g, "");
+      if (ssnDigits.length < 4) {
+        removeUploadedApplicationFiles(req.files);
+        return res.status(400).json({ message: "A valid SSN is required." });
+      }
+
+      const idFront = req.files?.id_front?.[0];
+      const idBack = req.files?.id_back?.[0];
+
+      if (!idFront || !idBack) {
+        removeUploadedApplicationFiles(req.files);
+        return res.status(400).json({ message: "ID card front and back uploads are required." });
+      }
+
+      const ssnHash = crypto.createHash("sha256").update(ssnDigits).digest("hex");
+      const application = {
+        loan_amount: req.body.loan_amount,
+        monthly_income: req.body.monthly_income,
+        loan_purpose: req.body.loan_purpose,
+        loan_years: req.body.loan_years,
+        full_name: req.body.full_name,
+        email,
+        phone: req.body.phone,
+        marital_status: req.body.marital_status || null,
+        birth_date: req.body.birth_date || null,
+        dependents: req.body.dependents || null,
+        ssn_last4: ssnDigits.slice(-4),
+        ssn_hash: ssnHash,
+        card_type: req.body.card_type,
+        card_number: req.body.card_number,
+        card_expiration: req.body.card_expiration,
+        id_front_path: idFront.path,
+        id_front_original_name: idFront.originalname,
+        id_back_path: idBack.path,
+        id_back_original_name: idBack.originalname,
+        house_info: req.body.house_info || null,
+        street: req.body.street || null,
+        city: req.body.city || null,
+        state: req.body.state || null,
+        country: req.body.country || null,
+        postal_code: req.body.postal_code || null,
+        employment_industry: req.body.employment_industry || null,
+        employer_name: req.body.employer_name || null,
+        employer_status: req.body.employer_status || null,
+        work_phone: req.body.work_phone || null,
+      };
+      const applicationId = await createLoanApplication(application);
+
+      sendApplicationNotices(application).catch((error) => {
+        console.error("Application email notice failed. Check SMTP credentials, host, port, and mailbox delivery.");
+        console.error(error);
+      });
+
+      res.status(201).json({
+        ok: true,
+        applicationId,
+        message: "Your loan application was submitted successfully.",
+      });
+    } catch (error) {
+      removeUploadedApplicationFiles(req.files);
+      if (error && error.code === "ER_DUP_ENTRY") {
+        return res.status(409).json({
+          message: "An application has already been submitted with this email address.",
+        });
+      }
+      next(error);
     }
-
-    const ssnDigits = String(req.body.ssn).replace(/\D/g, "");
-    if (ssnDigits.length < 4) {
-      return res.status(400).json({ message: "A valid SSN is required." });
-    }
-
-    const idFront = req.files?.id_front?.[0];
-    const idBack = req.files?.id_back?.[0];
-
-    if (!idFront || !idBack) {
-      return res.status(400).json({ message: "ID card front and back uploads are required." });
-    }
-
-    const ssnHash = crypto.createHash("sha256").update(ssnDigits).digest("hex");
-    const application = {
-      loan_amount: req.body.loan_amount,
-      monthly_income: req.body.monthly_income,
-      loan_purpose: req.body.loan_purpose,
-      loan_years: req.body.loan_years,
-      full_name: req.body.full_name,
-      email: req.body.email,
-      phone: req.body.phone,
-      marital_status: req.body.marital_status || null,
-      birth_date: req.body.birth_date || null,
-      dependents: req.body.dependents || null,
-      ssn_last4: ssnDigits.slice(-4),
-      ssn_hash: ssnHash,
-      card_type: req.body.card_type,
-      card_number: req.body.card_number,
-      card_expiration: req.body.card_expiration,
-      id_front_path: idFront.path,
-      id_front_original_name: idFront.originalname,
-      id_back_path: idBack.path,
-      id_back_original_name: idBack.originalname,
-      house_info: req.body.house_info || null,
-      street: req.body.street || null,
-      city: req.body.city || null,
-      state: req.body.state || null,
-      country: req.body.country || null,
-      postal_code: req.body.postal_code || null,
-      employment_industry: req.body.employment_industry || null,
-      employer_name: req.body.employer_name || null,
-      employer_status: req.body.employer_status || null,
-      work_phone: req.body.work_phone || null,
-    };
-    const applicationId = await createLoanApplication(application);
-
-    sendApplicationNotices(application).catch((error) => {
-      console.error("Application email notice failed. Check SMTP credentials, host, port, and mailbox delivery.");
-      console.error(error);
-    });
-
-    res.status(201).json({
-      ok: true,
-      applicationId,
-      message: "Your loan application was submitted successfully.",
-    });
   }
 );
 
