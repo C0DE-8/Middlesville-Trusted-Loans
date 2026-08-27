@@ -1,7 +1,8 @@
 const express = require("express");
 const { requireAdminAuth } = require("../middleware/auth");
-const { getDashboardData, updateLoanApplicationStatus } = require("../db");
+const { getDashboardData, updateLoanApplicationStatus, deleteLoanApplication } = require("../db");
 const { sendLoanDecisionNotice } = require("../mail");
+const fs = require("fs");
 
 const router = express.Router();
 const allowedStatuses = new Set(["pending", "approved", "rejected"]);
@@ -51,6 +52,29 @@ router.patch("/applications/:id/status", async (req, res, next) => {
       application,
       emailQueued: status === "approved" || status === "rejected",
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.delete("/applications/:id", async (req, res, next) => {
+  try {
+    const application = await deleteLoanApplication(req.params.id);
+
+    if (!application) {
+      return res.status(404).json({ message: "Loan application was not found." });
+    }
+
+    [application.id_front_path, application.id_back_path].filter(Boolean).forEach((filePath) => {
+      fs.unlink(filePath, (error) => {
+        if (error && error.code !== "ENOENT") {
+          console.error(`Failed to remove application upload: ${filePath}`);
+          console.error(error);
+        }
+      });
+    });
+
+    res.json({ ok: true, message: "Loan application was deleted." });
   } catch (error) {
     next(error);
   }

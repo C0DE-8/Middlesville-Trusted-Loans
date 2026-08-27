@@ -168,6 +168,24 @@ async function updateLoanApplicationStatus(id, status) {
   return getLoanApplicationById(id);
 }
 
+async function deleteLoanApplication(id) {
+  const [rows] = await pool.query(
+    `SELECT id, id_front_path, id_back_path
+     FROM loan_applications
+     WHERE id = ?
+     LIMIT 1`,
+    [id]
+  );
+  const application = rows[0] || null;
+
+  if (!application) {
+    return null;
+  }
+
+  await pool.query("DELETE FROM loan_applications WHERE id = ?", [id]);
+  return application;
+}
+
 async function getDashboardData() {
   const [[pendingApplications]] = await pool.query(
     "SELECT COUNT(*) AS count FROM loan_applications WHERE status = 'pending'"
@@ -207,5 +225,6 @@ module.exports = {
   getLatestApplicationStatusByEmail,
   getLoanApplicationById,
   updateLoanApplicationStatus,
+  deleteLoanApplication,
   getDashboardData,
 };

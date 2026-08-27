@@ -335,6 +335,10 @@ body {
   background: #b42318;
 }
 
+.admin-action--delete {
+  background: #344054;
+}
+
 .admin-action:disabled {
   cursor: not-allowed;
   opacity: 0.55;

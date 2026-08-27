@@ -64,6 +64,12 @@
         data: { status },
       });
     },
+    deleteApplication(id) {
+      return request({
+        url: `/api/admin/applications/${id}`,
+        method: "DELETE",
+      });
+    },
     submitLoanApplication(formData) {
       return request({
         url: "/api/applications",

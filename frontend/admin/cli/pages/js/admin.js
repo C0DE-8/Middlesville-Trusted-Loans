@@ -207,9 +207,11 @@ function createActionsCell(application) {
 
   const approveButton = createStatusButton(application, "approved", "Approve");
   const rejectButton = createStatusButton(application, "rejected", "Reject");
+  const deleteButton = createDeleteButton(application);
 
   actions.appendChild(approveButton);
   actions.appendChild(rejectButton);
+  actions.appendChild(deleteButton);
   cell.appendChild(actions);
   return cell;
 }
@@ -231,6 +233,35 @@ function createStatusButton(application, status, label) {
     } catch (error) {
       button.disabled = false;
       button.textContent = label;
+      window.alert(error.message);
+    }
+  });
+
+  return button;
+}
+
+function createDeleteButton(application) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "admin-action admin-action--delete";
+  button.textContent = "Delete";
+
+  button.addEventListener("click", async () => {
+    const confirmed = window.confirm(
+      `Delete the application for ${application.full_name || "this applicant"}? This cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    button.disabled = true;
+    button.textContent = "Deleting...";
+
+    try {
+      await window.MTLApi.deleteApplication(application.id);
+      await refreshAdminData();
+    } catch (error) {
+      button.disabled = false;
+      button.textContent = "Delete";
       window.alert(error.message);
     }
   });
