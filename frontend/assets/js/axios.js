@@ -71,14 +71,26 @@
       });
     },
     async getApplicationDocument(id, side) {
+      const config = {
+        url: `/api/admin/applications/${id}/documents/${side}`,
+        method: "GET",
+        responseType: "blob",
+        timeout: 90000,
+      };
+
       try {
-        const response = await client({
-          url: `/api/admin/applications/${id}/documents/${side}`,
-          method: "GET",
-          responseType: "blob",
-        });
+        const response = await client(config);
         return response.data;
       } catch (error) {
+        if (error.code === "ECONNABORTED") {
+          try {
+            const response = await client(config);
+            return response.data;
+          } catch (retryError) {
+            throw new Error(getErrorMessage(retryError));
+          }
+        }
+
         throw new Error(getErrorMessage(error));
       }
     },
