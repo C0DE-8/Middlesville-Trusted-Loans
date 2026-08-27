@@ -1,0 +1,16 @@
+{
+  "watch": [
+    "server.js",
+    "db.js",
+    "mail.js",
+    "middleware",
+    "router",
+    "templates"
+  ],
+  "ext": "js,json,html,css",
+  "ignore": [
+    "node_modules",
+    "uploads"
+  ],
+  "exec": "node server.js"
+}
