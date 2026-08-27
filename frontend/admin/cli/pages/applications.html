@@ -32,6 +32,10 @@
                 <h2>Submitted Applications</h2>
                 <span id="application-count">0 records</span>
             </div>
+            <div class="admin-loader" id="applications-loader" role="status" aria-live="polite">
+                <span class="admin-loader__spinner" aria-hidden="true"></span>
+                <span>Loading applications</span>
+            </div>
             <div class="admin-table-wrap">
                 <table class="admin-table">
                     <thead>
@@ -45,9 +49,33 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="applications-table">
-                        <tr>
-                            <td colspan="7">No applications yet.</td>
+                    <tbody id="applications-table" aria-busy="true">
+                        <tr class="admin-skeleton-row">
+                            <td><span class="admin-skeleton admin-skeleton--wide"></span><span class="admin-skeleton admin-skeleton--short"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--medium"></span><span class="admin-skeleton admin-skeleton--short"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--wide"></span><span class="admin-skeleton admin-skeleton--medium"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--medium"></span><span class="admin-skeleton admin-skeleton--short"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--wide"></span><span class="admin-skeleton admin-skeleton--medium"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--pill"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--button"></span><span class="admin-skeleton admin-skeleton--button"></span></td>
+                        </tr>
+                        <tr class="admin-skeleton-row">
+                            <td><span class="admin-skeleton admin-skeleton--wide"></span><span class="admin-skeleton admin-skeleton--short"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--medium"></span><span class="admin-skeleton admin-skeleton--short"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--wide"></span><span class="admin-skeleton admin-skeleton--medium"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--medium"></span><span class="admin-skeleton admin-skeleton--short"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--wide"></span><span class="admin-skeleton admin-skeleton--medium"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--pill"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--button"></span><span class="admin-skeleton admin-skeleton--button"></span></td>
+                        </tr>
+                        <tr class="admin-skeleton-row">
+                            <td><span class="admin-skeleton admin-skeleton--wide"></span><span class="admin-skeleton admin-skeleton--short"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--medium"></span><span class="admin-skeleton admin-skeleton--short"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--wide"></span><span class="admin-skeleton admin-skeleton--medium"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--medium"></span><span class="admin-skeleton admin-skeleton--short"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--wide"></span><span class="admin-skeleton admin-skeleton--medium"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--pill"></span></td>
+                            <td><span class="admin-skeleton admin-skeleton--button"></span><span class="admin-skeleton admin-skeleton--button"></span></td>
                         </tr>
                     </tbody>
                 </table>

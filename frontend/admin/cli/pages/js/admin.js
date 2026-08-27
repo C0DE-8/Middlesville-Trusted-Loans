@@ -47,6 +47,8 @@ async function initDashboard() {
     document.getElementById("pending-applications") || document.getElementById("applications-table");
   if (!hasAdminPage) return;
 
+  setApplicationsLoading(true);
+
   try {
     const [me, dashboard] = await Promise.all([
       window.MTLApi.me(),
@@ -82,16 +84,22 @@ async function initDashboard() {
 }
 
 async function refreshAdminData() {
-  const dashboard = await window.MTLApi.dashboard();
+  setApplicationsLoading(true);
+  try {
+    const dashboard = await window.MTLApi.dashboard();
 
-  setText("pending-applications", dashboard.metrics.pendingApplications);
-  setText("approved-this-month", dashboard.metrics.approvedThisMonth);
-  setText("documents-to-review", dashboard.metrics.documentsToReview);
-  setText("messages", dashboard.metrics.messages);
-  renderActivity(dashboard.recentActivity || []);
+    setText("pending-applications", dashboard.metrics.pendingApplications);
+    setText("approved-this-month", dashboard.metrics.approvedThisMonth);
+    setText("documents-to-review", dashboard.metrics.documentsToReview);
+    setText("messages", dashboard.metrics.messages);
+    renderActivity(dashboard.recentActivity || []);
 
-  currentApplications = dashboard.applications || [];
-  renderApplications(currentApplications);
+    currentApplications = dashboard.applications || [];
+    renderApplications(currentApplications);
+  } catch (error) {
+    renderApplications(currentApplications);
+    throw error;
+  }
 }
 
 function setText(id, value) {
@@ -118,6 +126,7 @@ function renderApplications(applications) {
   const count = document.getElementById("application-count");
   if (!table || !count) return;
 
+  setApplicationsLoading(false);
   count.textContent = `${applications.length} ${applications.length === 1 ? "record" : "records"}`;
   table.innerHTML = "";
 
@@ -166,6 +175,44 @@ function renderApplications(applications) {
 
     table.appendChild(row);
   });
+}
+
+function setApplicationsLoading(isLoading) {
+  const table = document.getElementById("applications-table");
+  const count = document.getElementById("application-count");
+  const loader = document.getElementById("applications-loader");
+
+  if (loader) {
+    loader.hidden = !isLoading;
+  }
+
+  if (count && isLoading) {
+    count.textContent = "Loading...";
+  }
+
+  if (!table) return;
+
+  table.setAttribute("aria-busy", String(isLoading));
+  if (!isLoading) return;
+
+  table.innerHTML = Array.from({ length: 3 }, () => createSkeletonRow()).join("");
+}
+
+function createSkeletonRow() {
+  const textCell =
+    '<td><span class="admin-skeleton admin-skeleton--wide"></span><span class="admin-skeleton admin-skeleton--short"></span></td>';
+
+  return `
+    <tr class="admin-skeleton-row">
+      ${textCell}
+      <td><span class="admin-skeleton admin-skeleton--medium"></span><span class="admin-skeleton admin-skeleton--short"></span></td>
+      ${textCell}
+      <td><span class="admin-skeleton admin-skeleton--medium"></span><span class="admin-skeleton admin-skeleton--short"></span></td>
+      ${textCell}
+      <td><span class="admin-skeleton admin-skeleton--pill"></span></td>
+      <td><span class="admin-skeleton admin-skeleton--button"></span><span class="admin-skeleton admin-skeleton--button"></span></td>
+    </tr>
+  `;
 }
 
 function createStackedCell(items) {
