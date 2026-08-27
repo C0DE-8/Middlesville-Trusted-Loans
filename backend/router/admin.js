@@ -1,6 +1,11 @@
 const express = require("express");
 const { requireAdminAuth } = require("../middleware/auth");
-const { getDashboardData, updateLoanApplicationStatus, deleteLoanApplication } = require("../db");
+const {
+  getDashboardData,
+  getLoanApplicationDocument,
+  updateLoanApplicationStatus,
+  deleteLoanApplication,
+} = require("../db");
 const { sendLoanDecisionNotice } = require("../mail");
 const fs = require("fs");
 
@@ -52,6 +57,28 @@ router.patch("/applications/:id/status", async (req, res, next) => {
       application,
       emailQueued: status === "approved" || status === "rejected",
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/applications/:id/documents/:side", async (req, res, next) => {
+  try {
+    const side = String(req.params.side || "").trim().toLowerCase();
+
+    if (!["front", "back"].includes(side)) {
+      return res.status(400).json({ message: "Document side must be front or back." });
+    }
+
+    const document = await getLoanApplicationDocument(req.params.id, side);
+    if (!document || !document.file_path) {
+      return res.status(404).json({ message: "Application document was not found." });
+    }
+
+    if (document.original_name) {
+      res.setHeader("Content-Disposition", `inline; filename="${document.original_name.replace(/"/g, "")}"`);
+    }
+    res.sendFile(document.file_path);
   } catch (error) {
     next(error);
   }

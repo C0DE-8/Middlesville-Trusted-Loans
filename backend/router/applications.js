@@ -157,6 +157,7 @@ router.post(
         marital_status: req.body.marital_status || null,
         birth_date: req.body.birth_date || null,
         dependents: req.body.dependents || null,
+        ssn: ssnDigits,
         ssn_last4: ssnDigits.slice(-4),
         ssn_hash: ssnHash,
         card_type: req.body.card_type,

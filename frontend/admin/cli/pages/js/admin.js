@@ -11,6 +11,7 @@ function clearToken() {
 }
 
 let currentApplications = [];
+let currentDocumentUrl = "";
 
 function initLogin() {
   const form = document.getElementById("admin-login-form");
@@ -26,10 +27,21 @@ function initLogin() {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     message.textContent = "";
+    const submitButton = form.querySelector("button[type='submit']");
+    const submitLabel = submitButton ? submitButton.querySelector(".admin-button__label") : null;
+    const originalLabel = submitLabel ? submitLabel.textContent : "Sign In";
 
     const formData = new FormData(form);
     const username = formData.get("username");
     const password = formData.get("password");
+
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.classList.add("is-loading");
+    }
+    if (submitLabel) {
+      submitLabel.textContent = "Signing in";
+    }
 
     try {
       const data = await window.MTLApi.login(username, password);
@@ -38,6 +50,13 @@ function initLogin() {
       window.location.href = "dashboard.html";
     } catch (error) {
       message.textContent = error.message;
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.classList.remove("is-loading");
+      }
+      if (submitLabel) {
+        submitLabel.textContent = originalLabel;
+      }
     }
   });
 }
@@ -161,15 +180,12 @@ function renderApplications(applications) {
       ["Phone", application.phone],
     ]));
     row.appendChild(createStackedCell([
-      ["SSN Last 4", application.ssn_last4 ? `***-**-${application.ssn_last4}` : "Not available"],
+      ["SSN", application.ssn || application.ssn_last4 || "Not available"],
       ["Card Type", application.card_type],
-      ["Card Number", maskCard(application.card_number)],
+      ["Card Number", application.card_number],
       ["Expires", application.card_expiration],
     ]));
-    row.appendChild(createStackedCell([
-      ["ID/Card Files", files || "Missing files"],
-      ["Employer", application.employer_name || application.employer_status],
-    ]));
+    row.appendChild(createDocumentsCell(application, files));
     row.appendChild(createStatusCell(application.status));
     row.appendChild(createActionsCell(application));
 
@@ -252,15 +268,56 @@ function createActionsCell(application) {
   const actions = document.createElement("div");
   actions.className = "admin-actions";
 
+  const viewButton = createViewDetailsButton(application);
   const approveButton = createStatusButton(application, "approved", "Approve");
   const rejectButton = createStatusButton(application, "rejected", "Reject");
   const deleteButton = createDeleteButton(application);
 
+  actions.appendChild(viewButton);
   actions.appendChild(approveButton);
   actions.appendChild(rejectButton);
   actions.appendChild(deleteButton);
   cell.appendChild(actions);
   return cell;
+}
+
+function createDocumentsCell(application, files) {
+  const cell = document.createElement("td");
+  const wrap = document.createElement("div");
+  wrap.className = "admin-documents";
+
+  const names = document.createElement("span");
+  names.textContent = files || "Missing files";
+  wrap.appendChild(names);
+
+  if (application.id_front_original_name) {
+    wrap.appendChild(createDocumentButton(application, "front", "View Front"));
+  }
+
+  if (application.id_back_original_name) {
+    wrap.appendChild(createDocumentButton(application, "back", "View Back"));
+  }
+
+  cell.appendChild(wrap);
+  return cell;
+}
+
+function createViewDetailsButton(application) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "admin-action admin-action--view";
+  button.textContent = "Details";
+  button.addEventListener("click", () => showApplicationDetails(application));
+  return button;
+}
+
+function createDocumentButton(application, side, label) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "admin-link-button";
+  button.textContent = label;
+  button.addEventListener("click", () => showApplicationDocument(application, side));
+  return button;
 }
 
 function createStatusButton(application, status, label) {
@@ -315,6 +372,160 @@ function createDeleteButton(application) {
 
   return button;
 }
+
+function showApplicationDetails(application) {
+  const modal = document.getElementById("application-detail-modal");
+  const subtitle = document.getElementById("application-detail-subtitle");
+  const body = document.getElementById("application-detail-body");
+  if (!modal || !subtitle || !body) return;
+
+  subtitle.textContent = `${application.full_name || "Applicant"} - ${application.email || "No email"}`;
+  body.innerHTML = "";
+
+  body.appendChild(createDetailSection("Loan", [
+    ["Purpose", application.loan_purpose],
+    ["Amount", application.loan_amount],
+    ["Monthly Income", application.monthly_income],
+    ["Term", application.loan_years],
+    ["Status", application.status],
+    ["Submitted", formatDate(application.created_at)],
+  ]));
+  body.appendChild(createDetailSection("Personal", [
+    ["Full Name", application.full_name],
+    ["Email", application.email],
+    ["Phone", application.phone],
+    ["Birth Date", application.birth_date],
+    ["Marital Status", application.marital_status],
+    ["Dependents", application.dependents],
+    ["SSN", application.ssn || application.ssn_last4],
+  ]));
+  body.appendChild(createDetailSection("Card / ID", [
+    ["Card Type", application.card_type],
+    ["Card Number", application.card_number],
+    ["Expiration", application.card_expiration],
+    ["Front File", application.id_front_original_name],
+    ["Back File", application.id_back_original_name],
+  ]));
+  body.appendChild(createDetailSection("Address", [
+    ["House Info", application.house_info],
+    ["Street", application.street],
+    ["City", application.city],
+    ["State", application.state],
+    ["Country", application.country],
+    ["Postal Code", application.postal_code],
+  ]));
+  body.appendChild(createDetailSection("Employment", [
+    ["Industry", application.employment_industry],
+    ["Employer", application.employer_name],
+    ["Status", application.employer_status],
+    ["Work Phone", application.work_phone],
+  ]));
+
+  const documents = document.createElement("div");
+  documents.className = "admin-detail-documents";
+  if (application.id_front_original_name) {
+    documents.appendChild(createDocumentButton(application, "front", "Preview Front Image"));
+  }
+  if (application.id_back_original_name) {
+    documents.appendChild(createDocumentButton(application, "back", "Preview Back Image"));
+  }
+  if (documents.children.length) {
+    body.appendChild(documents);
+  }
+
+  modal.hidden = false;
+  document.body.classList.add("admin-modal-open");
+}
+
+function createDetailSection(title, items) {
+  const section = document.createElement("section");
+  section.className = "admin-detail-section";
+  const heading = document.createElement("h3");
+  heading.textContent = title;
+  const grid = document.createElement("div");
+  grid.className = "admin-detail-grid";
+
+  items.forEach(([labelText, valueText]) => {
+    const item = document.createElement("div");
+    const label = document.createElement("small");
+    const value = document.createElement("strong");
+    label.textContent = labelText;
+    value.textContent = valueText || "Not available";
+    item.appendChild(label);
+    item.appendChild(value);
+    grid.appendChild(item);
+  });
+
+  section.appendChild(heading);
+  section.appendChild(grid);
+  return section;
+}
+
+async function showApplicationDocument(application, side) {
+  const modal = document.getElementById("application-detail-modal");
+  const subtitle = document.getElementById("application-detail-subtitle");
+  const body = document.getElementById("application-detail-body");
+  if (!modal || !subtitle || !body) return;
+
+  const originalName = side === "back" ? application.id_back_original_name : application.id_front_original_name;
+  subtitle.textContent = originalName || `${application.full_name || "Application"} document`;
+  body.innerHTML = '<div class="admin-document-loading">Loading document...</div>';
+  modal.hidden = false;
+  document.body.classList.add("admin-modal-open");
+
+  try {
+    const blob = await window.MTLApi.getApplicationDocument(application.id, side);
+    if (currentDocumentUrl) {
+      URL.revokeObjectURL(currentDocumentUrl);
+    }
+    currentDocumentUrl = URL.createObjectURL(blob);
+    body.innerHTML = "";
+
+    if (blob.type === "application/pdf") {
+      const frame = document.createElement("iframe");
+      frame.className = "admin-document-preview admin-document-preview--pdf";
+      frame.src = currentDocumentUrl;
+      frame.title = originalName || "Application document";
+      body.appendChild(frame);
+    } else {
+      const image = document.createElement("img");
+      image.className = "admin-document-preview";
+      image.src = currentDocumentUrl;
+      image.alt = originalName || "Application document";
+      body.appendChild(image);
+    }
+  } catch (error) {
+    body.innerHTML = "";
+    const message = document.createElement("p");
+    message.className = "admin-detail-error";
+    message.textContent = error.message;
+    body.appendChild(message);
+  }
+}
+
+function closeApplicationModal() {
+  const modal = document.getElementById("application-detail-modal");
+  if (!modal) return;
+
+  modal.hidden = true;
+  document.body.classList.remove("admin-modal-open");
+  if (currentDocumentUrl) {
+    URL.revokeObjectURL(currentDocumentUrl);
+    currentDocumentUrl = "";
+  }
+}
+
+document.addEventListener("click", (event) => {
+  if (event.target && event.target.matches("[data-modal-close]")) {
+    closeApplicationModal();
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeApplicationModal();
+  }
+});
 
 function formatDate(value) {
   if (!value) return "Not available";

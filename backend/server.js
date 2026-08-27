@@ -10,7 +10,6 @@ const { initDatabase } = require("./db");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const frontendDir = path.resolve(__dirname, "../frontend");
 const corsOptions = {
   origin: "*",
   methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
@@ -42,14 +41,8 @@ app.get("/api/health", (req, res) => {
   res.json({ ok: true, service: "Middlesville Trusted Loans API" });
 });
 
-app.get(["/admin/cli/pages", "/admin/cli/pages/"], (req, res) => {
-  res.sendFile(path.join(frontendDir, "admin", "cli", "pages", "index.html"));
-});
-
-app.use(express.static(frontendDir));
-
 app.use((req, res) => {
-  res.status(404).sendFile(path.join(frontendDir, "404.html"));
+  res.status(404).json({ message: "API route was not found." });
 });
 
 app.use((error, req, res, next) => {

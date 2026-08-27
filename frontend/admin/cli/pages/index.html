@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login | Middlesville Trusted Loans</title>
     <link rel="stylesheet" href="../../../assets/vendors/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/admin.css?v=20260827-2">
 </head>
 <body class="admin-auth-page">
     <main class="admin-auth">
@@ -23,12 +23,15 @@
                 <input id="password" name="password" type="password" autocomplete="current-password" required>
 
                 <p id="login-message" class="admin-form__message" aria-live="polite"></p>
-                <button type="submit">Sign In</button>
+                <button type="submit">
+                    <span class="admin-button__spinner" aria-hidden="true"></span>
+                    <span class="admin-button__label">Sign In</span>
+                </button>
             </form>
         </section>
     </main>
     <script src="../../../assets/vendors/axios/axios.min.js"></script>
     <script src="../../../assets/js/axios.js"></script>
-    <script src="js/admin.js"></script>
+    <script src="js/admin.js?v=20260827-2"></script>
 </body>
 </html>

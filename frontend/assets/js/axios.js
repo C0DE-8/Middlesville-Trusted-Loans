@@ -70,6 +70,18 @@
         method: "DELETE",
       });
     },
+    async getApplicationDocument(id, side) {
+      try {
+        const response = await client({
+          url: `/api/admin/applications/${id}/documents/${side}`,
+          method: "GET",
+          responseType: "blob",
+        });
+        return response.data;
+      } catch (error) {
+        throw new Error(getErrorMessage(error));
+      }
+    },
     submitLoanApplication(formData) {
       return request({
         url: "/api/applications",

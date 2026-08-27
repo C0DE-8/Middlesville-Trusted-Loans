@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loan Applications | Middlesville Trusted Loans</title>
     <link rel="stylesheet" href="../../../assets/vendors/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/admin.css?v=20260827-2">
 </head>
 <body class="admin-dashboard-page">
     <header class="admin-header">
@@ -82,8 +82,21 @@
             </div>
         </section>
     </main>
+    <div class="admin-modal" id="application-detail-modal" hidden>
+        <div class="admin-modal__backdrop" data-modal-close></div>
+        <section class="admin-modal__panel" role="dialog" aria-modal="true" aria-labelledby="application-detail-title">
+            <header class="admin-modal__header">
+                <div>
+                    <h2 id="application-detail-title">Application Details</h2>
+                    <p id="application-detail-subtitle"></p>
+                </div>
+                <button class="admin-modal__close" type="button" aria-label="Close details" data-modal-close>&times;</button>
+            </header>
+            <div class="admin-modal__body" id="application-detail-body"></div>
+        </section>
+    </div>
     <script src="../../../assets/vendors/axios/axios.min.js"></script>
     <script src="../../../assets/js/axios.js"></script>
-    <script src="js/admin.js"></script>
+    <script src="js/admin.js?v=20260827-2"></script>
 </body>
 </html>

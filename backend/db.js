@@ -94,11 +94,11 @@ async function createLoanApplication(application) {
   const [result] = await pool.query(
     `INSERT INTO loan_applications (
       loan_amount, monthly_income, loan_purpose, loan_years, full_name, email, phone,
-      marital_status, birth_date, dependents, ssn_last4, ssn_hash, card_type, card_number,
+      marital_status, birth_date, dependents, ssn, ssn_last4, ssn_hash, card_type, card_number,
       card_expiration, id_front_path, id_front_original_name, id_back_path, id_back_original_name,
       house_info, street, city, state, country, postal_code, employment_industry,
       employer_name, employer_status, work_phone
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       application.loan_amount,
       application.monthly_income,
@@ -110,6 +110,7 @@ async function createLoanApplication(application) {
       application.marital_status,
       application.birth_date,
       application.dependents,
+      application.ssn,
       application.ssn_last4,
       application.ssn_hash,
       application.card_type,
@@ -151,9 +152,23 @@ async function getLatestApplicationStatusByEmail(email) {
 async function getLoanApplicationById(id) {
   const [rows] = await pool.query(
     `SELECT id, loan_amount, monthly_income, loan_purpose, loan_years, full_name, email, phone,
-      marital_status, birth_date, dependents, ssn_last4, card_type, card_number, card_expiration,
+      marital_status, birth_date, dependents, ssn, ssn_last4, card_type, card_number, card_expiration,
       id_front_original_name, id_back_original_name, house_info, street, city, state, country,
       postal_code, employment_industry, employer_name, employer_status, work_phone, status, created_at
+     FROM loan_applications
+     WHERE id = ?
+     LIMIT 1`,
+    [id]
+  );
+
+  return rows[0] || null;
+}
+
+async function getLoanApplicationDocument(id, side) {
+  const column = side === "back" ? "id_back_path" : "id_front_path";
+  const nameColumn = side === "back" ? "id_back_original_name" : "id_front_original_name";
+  const [rows] = await pool.query(
+    `SELECT ${column} AS file_path, ${nameColumn} AS original_name
      FROM loan_applications
      WHERE id = ?
      LIMIT 1`,
@@ -199,8 +214,9 @@ async function getDashboardData() {
 
   const [applications] = await pool.query(
     `SELECT id, loan_amount, monthly_income, loan_purpose, loan_years, full_name, email, phone,
-      ssn_last4, card_type, card_number, card_expiration, id_front_original_name,
-      id_back_original_name, employer_name, employer_status, status, created_at
+      marital_status, birth_date, dependents, ssn, ssn_last4, card_type, card_number, card_expiration,
+      id_front_original_name, id_back_original_name, house_info, street, city, state, country,
+      postal_code, employment_industry, employer_name, employer_status, work_phone, status, created_at
      FROM loan_applications
      ORDER BY created_at DESC, id DESC
      LIMIT 25`
@@ -224,6 +240,7 @@ module.exports = {
   createLoanApplication,
   getLatestApplicationStatusByEmail,
   getLoanApplicationById,
+  getLoanApplicationDocument,
   updateLoanApplicationStatus,
   deleteLoanApplication,
   getDashboardData,

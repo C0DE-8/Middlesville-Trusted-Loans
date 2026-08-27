@@ -111,6 +111,7 @@
   const loanApplicationForm = document.getElementById("loan-application-form");
   if (loanApplicationForm) {
     initNumberOnlyInputs(loanApplicationForm);
+    initCardExpirationInputs(loanApplicationForm);
     initIdUploadPreviews(loanApplicationForm);
 
     loanApplicationForm.addEventListener("submit", async function (event) {
@@ -173,11 +174,17 @@
     if (event.target && event.target.matches("[data-number-only]")) {
       formatNumberInput(event.target);
     }
+    if (event.target && event.target.matches("[data-card-expiration]")) {
+      formatCardExpirationInput(event.target);
+    }
   });
 
   document.addEventListener("change", function (event) {
     if (event.target && event.target.matches("[data-number-only]")) {
       formatNumberInput(event.target);
+    }
+    if (event.target && event.target.matches("[data-card-expiration]")) {
+      formatCardExpirationInput(event.target);
     }
   });
 
@@ -203,6 +210,20 @@
   function formatNumberInput(input) {
     const digits = stripNonDigits(input.value);
     input.value = input.hasAttribute("data-format-money") ? formatNumberWithCommas(digits) : digits;
+  }
+
+  function initCardExpirationInputs(form) {
+    form.querySelectorAll("[data-card-expiration]").forEach(function (input) {
+      input.addEventListener("blur", function () {
+        formatCardExpirationInput(input);
+      });
+      formatCardExpirationInput(input);
+    });
+  }
+
+  function formatCardExpirationInput(input) {
+    const digits = stripNonDigits(input.value).slice(0, 4);
+    input.value = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
   }
 
   function stripNonDigits(value) {
