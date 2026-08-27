@@ -42,7 +42,7 @@ app.get("/api/health", (req, res) => {
   res.json({ ok: true, service: "Middlesville Trusted Loans API" });
 });
 
-app.get(["/admin", "/admin/cli/pages"], (req, res) => {
+app.get(["/admin/cli/pages", "/admin/cli/pages/"], (req, res) => {
   res.sendFile(path.join(frontendDir, "admin", "cli", "pages", "index.html"));
 });
 
