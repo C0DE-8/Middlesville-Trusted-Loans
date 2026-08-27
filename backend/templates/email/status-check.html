@@ -1,0 +1,23 @@
+<p>Hello {{full_name}},</p>
+<p>Your loan status was checked from the Middlesville Trusted Loans website. Here is the latest status we have on file.</p>
+
+<div class="summary">
+  <div class="summary-row">
+    <span class="summary-label">Status</span>
+    <span class="summary-value"><span class="status-badge">{{status}}</span></span>
+  </div>
+  <div class="summary-row">
+    <span class="summary-label">Loan Purpose</span>
+    <span class="summary-value">{{loan_purpose}}</span>
+  </div>
+  <div class="summary-row">
+    <span class="summary-label">Requested Amount</span>
+    <span class="summary-value">{{loan_amount}}</span>
+  </div>
+  <div class="summary-row">
+    <span class="summary-label">Submitted</span>
+    <span class="summary-value">{{submitted_at}}</span>
+  </div>
+</div>
+
+<p>If this was not you, contact Middlesville Trusted Loans so we can review the request.</p>

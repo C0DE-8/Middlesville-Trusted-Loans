@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Middlesville Trusted Loans</title>
+    <link rel="stylesheet" href="../../../assets/vendors/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-dashboard-page">
+    <header class="admin-header">
+        <a href="../../../index.html" class="admin-header__logo">
+            <img src="../../../assets/images/logo-dark.png" alt="Middlesville Trusted Loans" width="150">
+        </a>
+        <nav class="admin-header__nav">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="applications.html">Applications</a>
+            <a href="../../../index.html">View Site</a>
+            <span id="admin-name">Admin</span>
+            <button id="logout-button" type="button">Logout</button>
+        </nav>
+    </header>
+
+    <main class="admin-dashboard">
+        <section class="admin-dashboard__intro">
+            <h1>Admin Dashboard</h1>
+            <p>Review loan activity, document uploads, and applicant messages.</p>
+        </section>
+
+        <section class="admin-shortcuts" aria-label="Admin shortcuts">
+            <a class="admin-shortcut" href="applications.html">
+                <span>Applications</span>
+                <strong>Review submitted loan requests and identity files.</strong>
+            </a>
+            <a class="admin-shortcut" href="../../../apply-loan.html">
+                <span>Loan Form</span>
+                <strong>Open the public application form.</strong>
+            </a>
+            <a class="admin-shortcut" href="../../../contact.html">
+                <span>Contact Page</span>
+                <strong>Check the public contact experience.</strong>
+            </a>
+        </section>
+
+        <section class="admin-metrics" aria-label="Dashboard metrics">
+            <article class="admin-metric">
+                <span id="pending-applications">0</span>
+                <h2>Pending Applications</h2>
+            </article>
+            <article class="admin-metric">
+                <span id="approved-this-month">0</span>
+                <h2>Approved This Month</h2>
+            </article>
+            <article class="admin-metric">
+                <span id="documents-to-review">0</span>
+                <h2>Documents To Review</h2>
+            </article>
+            <article class="admin-metric">
+                <span id="messages">0</span>
+                <h2>Messages</h2>
+            </article>
+        </section>
+
+        <section class="admin-panel">
+            <div>
+                <h2>Recent Activity</h2>
+                <ul id="recent-activity" class="admin-activity"></ul>
+            </div>
+        </section>
+
+        <section class="admin-panel">
+            <div class="admin-panel__heading">
+                <h2>Loan Applications</h2>
+                <span id="application-count">0 records</span>
+            </div>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Applicant</th>
+                            <th>Loan Details</th>
+                            <th>Contact</th>
+                            <th>Identity</th>
+                            <th>Documents</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applications-table">
+                        <tr>
+                            <td colspan="7">No applications yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <script src="../../../assets/vendors/axios/axios.min.js"></script>
+    <script src="../../../assets/js/axios.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

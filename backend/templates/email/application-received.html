@@ -1,0 +1,24 @@
+<p>Hello {{full_name}},</p>
+<p>We received your loan application and placed it in review. Keep this email for your records, and use the same email address if you check your status on the Apply Loan page.</p>
+
+<div class="summary">
+  <div class="summary-row">
+    <span class="summary-label">Status</span>
+    <span class="summary-value"><span class="status-badge">{{status}}</span></span>
+  </div>
+  <div class="summary-row">
+    <span class="summary-label">Loan Purpose</span>
+    <span class="summary-value">{{loan_purpose}}</span>
+  </div>
+  <div class="summary-row">
+    <span class="summary-label">Requested Amount</span>
+    <span class="summary-value">{{loan_amount}}</span>
+  </div>
+  <div class="summary-row">
+    <span class="summary-label">Submitted</span>
+    <span class="summary-value">{{submitted_at}}</span>
+  </div>
+</div>
+
+<p>Our team will review the details and contact you if any additional information is needed.</p>
+<p><a class="button" href="{{status_url}}">Check loan status</a></p>

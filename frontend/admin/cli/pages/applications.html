@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Applications | Middlesville Trusted Loans</title>
+    <link rel="stylesheet" href="../../../assets/vendors/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-dashboard-page">
+    <header class="admin-header">
+        <a href="../../../index.html" class="admin-header__logo">
+            <img src="../../../assets/images/logo-dark.png" alt="Middlesville Trusted Loans" width="150">
+        </a>
+        <nav class="admin-header__nav">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="applications.html">Applications</a>
+            <a href="../../../index.html">View Site</a>
+            <span id="admin-name">Admin</span>
+            <button id="logout-button" type="button">Logout</button>
+        </nav>
+    </header>
+
+    <main class="admin-dashboard">
+        <section class="admin-dashboard__intro">
+            <h1>Loan Applications</h1>
+            <p>Review loan requests, contact details, identity information, and approve or reject applications.</p>
+        </section>
+
+        <section class="admin-panel">
+            <div class="admin-panel__heading">
+                <h2>Submitted Applications</h2>
+                <span id="application-count">0 records</span>
+            </div>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Applicant</th>
+                            <th>Loan Details</th>
+                            <th>Contact</th>
+                            <th>Identity</th>
+                            <th>Documents</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applications-table">
+                        <tr>
+                            <td colspan="7">No applications yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <script src="../../../assets/vendors/axios/axios.min.js"></script>
+    <script src="../../../assets/js/axios.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
