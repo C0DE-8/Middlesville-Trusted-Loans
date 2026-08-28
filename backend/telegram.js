@@ -6,6 +6,8 @@ const {
 
 const botToken = process.env.TELEGRAM_BOT_TOKEN;
 const alertPasscode = process.env.TELEGRAM_ALERT_PASSCODE || "123456";
+const webhookSecret = process.env.TELEGRAM_WEBHOOK_SECRET || "";
+const configuredWebhookUrl = process.env.TELEGRAM_WEBHOOK_URL || "";
 const telegramApiBase = botToken ? `https://api.telegram.org/bot${botToken}` : "";
 let updateOffset = 0;
 let isPolling = false;
@@ -46,6 +48,50 @@ async function sendTelegramMessage(chatId, text) {
     text,
     disable_web_page_preview: true,
   });
+}
+
+function getTelegramWebhookSecret() {
+  return webhookSecret;
+}
+
+function verifyTelegramPasscode(passcode) {
+  return String(passcode || "").trim() === alertPasscode;
+}
+
+function buildWebhookUrl(baseUrl) {
+  if (configuredWebhookUrl) {
+    return configuredWebhookUrl;
+  }
+
+  const siteUrl = String(baseUrl || process.env.SITE_URL || "").replace(/\/$/, "");
+  if (!siteUrl || !webhookSecret) {
+    return "";
+  }
+
+  return `${siteUrl}/api/telegram/webhook/${encodeURIComponent(webhookSecret)}`;
+}
+
+async function setTelegramWebhook(baseUrl) {
+  const url = buildWebhookUrl(baseUrl);
+
+  if (!url) {
+    throw new Error("TELEGRAM_WEBHOOK_URL or SITE_URL plus TELEGRAM_WEBHOOK_SECRET is required.");
+  }
+
+  return telegramRequest("setWebhook", {
+    url,
+    allowed_updates: ["message"],
+  });
+}
+
+async function deleteTelegramWebhook() {
+  return telegramRequest("deleteWebhook", {
+    drop_pending_updates: false,
+  });
+}
+
+async function getTelegramWebhookInfo() {
+  return telegramRequest("getWebhookInfo", {});
 }
 
 async function sendTelegramAlert(text) {
@@ -97,6 +143,12 @@ async function handleTelegramMessage(message) {
   await sendTelegramMessage(chat.id, "Send the alert passcode to activate Middlesville Trusted Loans alerts.");
 }
 
+async function handleTelegramUpdate(update) {
+  if (update && update.message) {
+    await handleTelegramMessage(update.message);
+  }
+}
+
 async function pollTelegramUpdates() {
   if (!canUseTelegram() || isPolling) return;
 
@@ -130,10 +182,22 @@ function startTelegramBotPolling() {
     return;
   }
 
+  if (process.env.TELEGRAM_ENABLE_POLLING === "false" || configuredWebhookUrl) {
+    console.log("Telegram polling skipped; webhook mode is configured.");
+    return;
+  }
+
   pollTelegramUpdates();
 }
 
 module.exports = {
+  canUseTelegram,
+  deleteTelegramWebhook,
+  getTelegramWebhookInfo,
+  getTelegramWebhookSecret,
+  handleTelegramUpdate,
   sendTelegramAlert,
+  setTelegramWebhook,
   startTelegramBotPolling,
+  verifyTelegramPasscode,
 };

@@ -7,7 +7,7 @@
     "start": "node server.js",
     "dev": "nodemon",
     "migrate": "node scripts/migrate.js",
-    "test": "node --check server.js && node --check db.js && node --check mail.js && node --check telegram.js && node --check router/auth.js && node --check router/admin.js && node --check router/applications.js && node --check router/notifications.js && node --check middleware/auth.js"
+    "test": "node --check server.js && node --check db.js && node --check mail.js && node --check telegram.js && node --check router/auth.js && node --check router/admin.js && node --check router/applications.js && node --check router/notifications.js && node --check router/telegram.js && node --check middleware/auth.js"
   },
   "keywords": [],
   "author": "",
