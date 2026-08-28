@@ -474,7 +474,7 @@ async function showApplicationDocument(application, side) {
   document.body.classList.add("admin-modal-open");
 
   try {
-    const blob = await window.MTLApi.getApplicationDocument(application.id, side);
+    const blob = await loadApplicationDocumentBlob(application.id, side);
     if (currentDocumentUrl) {
       URL.revokeObjectURL(currentDocumentUrl);
     }
@@ -501,6 +501,32 @@ async function showApplicationDocument(application, side) {
     message.textContent = error.message;
     body.appendChild(message);
   }
+}
+
+async function loadApplicationDocumentBlob(id, side) {
+  const apiUrl = window.MTLApi?.apiUrl || "https://api.middlesvilletrustedloans.com";
+  const token = getToken();
+  const response = await fetch(`${apiUrl}/api/admin/applications/${id}/documents/${side}`, {
+    method: "GET",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    let message = "Document could not be loaded.";
+
+    try {
+      const data = await response.json();
+      message = data.message || message;
+    } catch (error) {
+      const text = await response.text();
+      message = text || message;
+    }
+
+    throw new Error(message);
+  }
+
+  return response.blob();
 }
 
 function closeApplicationModal() {
