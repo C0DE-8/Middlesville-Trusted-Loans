@@ -1,4 +1,5 @@
 const {
+  countActiveTelegramAlertChats,
   disableTelegramAlertChat,
   getActiveTelegramAlertChats,
   upsertTelegramAlertChat,
@@ -99,17 +100,31 @@ async function setTelegramWebhook(value) {
   return telegramRequest("setWebhook", {
     url,
     allowed_updates: ["message"],
+    drop_pending_updates: false,
   });
 }
 
-async function deleteTelegramWebhook() {
+async function deleteTelegramWebhook(dropPendingUpdates = false) {
   return telegramRequest("deleteWebhook", {
-    drop_pending_updates: false,
+    drop_pending_updates: Boolean(dropPendingUpdates),
   });
 }
 
 async function getTelegramWebhookInfo() {
   return telegramRequest("getWebhookInfo", {});
+}
+
+async function getTelegramStatus(value) {
+  const webhookInfo = canUseTelegram() ? await getTelegramWebhookInfo() : null;
+
+  return {
+    configured: canUseTelegram(),
+    expectedWebhookUrl: buildWebhookUrl(value),
+    webhookSecretConfigured: Boolean(webhookSecret),
+    pollingEnabled: process.env.TELEGRAM_ENABLE_POLLING !== "false" && !configuredWebhookUrl,
+    activeChatCount: await countActiveTelegramAlertChats(),
+    webhookInfo,
+  };
 }
 
 async function sendTelegramAlert(text) {
@@ -251,6 +266,7 @@ module.exports = {
   deleteTelegramWebhook,
   getTelegramWebhookInfo,
   getTelegramWebhookSecret,
+  getTelegramStatus,
   handleTelegramUpdate,
   isTelegramAlertChatActive,
   sendTelegramAlert,

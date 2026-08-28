@@ -305,6 +305,13 @@ async function getActiveTelegramAlertChats() {
   return rows;
 }
 
+async function countActiveTelegramAlertChats() {
+  const [[row]] = await pool.query(
+    "SELECT COUNT(*) AS count FROM telegram_alert_chats WHERE is_active = 1"
+  );
+  return row.count;
+}
+
 async function disableTelegramAlertChat(chatId) {
   await pool.query("UPDATE telegram_alert_chats SET is_active = 0 WHERE chat_id = ?", [String(chatId)]);
 }
@@ -471,6 +478,7 @@ module.exports = {
   getAgentsWithReferralStats,
   upsertTelegramAlertChat,
   getActiveTelegramAlertChats,
+  countActiveTelegramAlertChats,
   disableTelegramAlertChat,
   createLoanApplication,
   getLatestApplicationStatusByEmail,
