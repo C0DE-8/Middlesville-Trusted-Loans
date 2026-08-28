@@ -1,10 +1,12 @@
 const express = require("express");
 const {
+  buildWebhookUrl,
   canUseTelegram,
   deleteTelegramWebhook,
   getTelegramWebhookInfo,
   getTelegramWebhookSecret,
   handleTelegramUpdate,
+  sendTelegramAlert,
   setTelegramWebhook,
   verifyTelegramPasscode,
 } = require("../telegram");
@@ -36,6 +38,7 @@ router.post("/set-webhook", requireTelegramPasscode, requireTelegramConfig, asyn
     const result = await setTelegramWebhook(req.body.webhookUrl);
     res.json({
       ok: true,
+      webhookUrl: buildWebhookUrl(req.body.webhookUrl),
       result,
       message: "Telegram webhook was set.",
     });
@@ -51,6 +54,25 @@ router.post("/delete-webhook", requireTelegramPasscode, requireTelegramConfig, a
       ok: true,
       result,
       message: "Telegram webhook was deleted.",
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/test-alert", requireTelegramPasscode, requireTelegramConfig, async (req, res, next) => {
+  try {
+    const sent = await sendTelegramAlert(
+      [
+        "Test alert",
+        "Middlesville Trusted Loans Telegram alerts are working.",
+      ].join("\n")
+    );
+
+    res.json({
+      ok: true,
+      sent,
+      message: sent ? "Test alert was sent." : "No active Telegram chats are registered yet.",
     });
   } catch (error) {
     next(error);

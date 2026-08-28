@@ -12,6 +12,15 @@ const telegramApiBase = botToken ? `https://api.telegram.org/bot${botToken}` : "
 let updateOffset = 0;
 let isPolling = false;
 
+const menuKeyboard = {
+  keyboard: [
+    [{ text: "Activate Alerts" }, { text: "Alert Status" }],
+    [{ text: "Stop Alerts" }],
+  ],
+  resize_keyboard: true,
+  one_time_keyboard: false,
+};
+
 function canUseTelegram() {
   return Boolean(botToken);
 }
@@ -42,11 +51,12 @@ async function telegramRequest(method, body) {
   return data.result;
 }
 
-async function sendTelegramMessage(chatId, text) {
+async function sendTelegramMessage(chatId, text, options = {}) {
   return telegramRequest("sendMessage", {
     chat_id: chatId,
     text,
     disable_web_page_preview: true,
+    ...options,
   });
 }
 
@@ -58,12 +68,20 @@ function verifyTelegramPasscode(passcode) {
   return String(passcode || "").trim() === alertPasscode;
 }
 
-function buildWebhookUrl(baseUrl) {
+function isAbsoluteUrl(value) {
+  return /^https:\/\//i.test(String(value || ""));
+}
+
+function buildWebhookUrl(value) {
+  if (isAbsoluteUrl(value)) {
+    return value;
+  }
+
   if (configuredWebhookUrl) {
     return configuredWebhookUrl;
   }
 
-  const siteUrl = String(baseUrl || process.env.SITE_URL || "").replace(/\/$/, "");
+  const siteUrl = String(value || process.env.TELEGRAM_PUBLIC_URL || process.env.SITE_URL || "").replace(/\/$/, "");
   if (!siteUrl || !webhookSecret) {
     return "";
   }
@@ -71,8 +89,8 @@ function buildWebhookUrl(baseUrl) {
   return `${siteUrl}/api/telegram/webhook/${encodeURIComponent(webhookSecret)}`;
 }
 
-async function setTelegramWebhook(baseUrl) {
-  const url = buildWebhookUrl(baseUrl);
+async function setTelegramWebhook(value) {
+  const url = buildWebhookUrl(value);
 
   if (!url) {
     throw new Error("TELEGRAM_WEBHOOK_URL or SITE_URL plus TELEGRAM_WEBHOOK_SECRET is required.");
@@ -123,24 +141,61 @@ async function sendTelegramAlert(text) {
   return true;
 }
 
+async function isTelegramAlertChatActive(chatId) {
+  const chats = await getActiveTelegramAlertChats();
+  return chats.some((chat) => String(chat.chat_id) === String(chatId));
+}
+
 async function handleTelegramMessage(message) {
   const text = String(message.text || "").trim();
   const chat = message.chat;
   if (!chat || !text) return;
 
-  if (text === "/stop") {
+  if (text === "/start") {
+    await sendTelegramMessage(
+      chat.id,
+      "Choose an alert option. Use Activate Alerts, then send the passcode when asked.",
+      { reply_markup: menuKeyboard }
+    );
+    return;
+  }
+
+  if (text === "Activate Alerts") {
+    await sendTelegramMessage(chat.id, "Send the alert passcode to activate this chat.", {
+      reply_markup: menuKeyboard,
+    });
+    return;
+  }
+
+  if (text === "Alert Status") {
+    const isActive = await isTelegramAlertChatActive(chat.id);
+    await sendTelegramMessage(
+      chat.id,
+      isActive ? "Alerts are active for this chat." : "Alerts are not active. Tap Activate Alerts and send the passcode.",
+      { reply_markup: menuKeyboard }
+    );
+    return;
+  }
+
+  if (text === "/stop" || text === "Stop Alerts") {
     await disableTelegramAlertChat(chat.id);
-    await sendTelegramMessage(chat.id, "Telegram alerts have been turned off for this chat.");
+    await sendTelegramMessage(chat.id, "Telegram alerts have been turned off for this chat.", {
+      reply_markup: menuKeyboard,
+    });
     return;
   }
 
   if (text === alertPasscode || text === `/start ${alertPasscode}`) {
     await upsertTelegramAlertChat(chat);
-    await sendTelegramMessage(chat.id, "Telegram alerts are active for Middlesville Trusted Loans.");
+    await sendTelegramMessage(chat.id, "Telegram alerts are active for Middlesville Trusted Loans.", {
+      reply_markup: menuKeyboard,
+    });
     return;
   }
 
-  await sendTelegramMessage(chat.id, "Send the alert passcode to activate Middlesville Trusted Loans alerts.");
+  await sendTelegramMessage(chat.id, "Use the buttons below to manage alerts.", {
+    reply_markup: menuKeyboard,
+  });
 }
 
 async function handleTelegramUpdate(update) {
@@ -191,12 +246,15 @@ function startTelegramBotPolling() {
 }
 
 module.exports = {
+  buildWebhookUrl,
   canUseTelegram,
   deleteTelegramWebhook,
   getTelegramWebhookInfo,
   getTelegramWebhookSecret,
   handleTelegramUpdate,
+  isTelegramAlertChatActive,
   sendTelegramAlert,
+  sendTelegramMessage,
   setTelegramWebhook,
   startTelegramBotPolling,
   verifyTelegramPasscode,
