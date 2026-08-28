@@ -280,6 +280,35 @@ async function getAgentsWithReferralStats() {
   };
 }
 
+async function upsertTelegramAlertChat(chat) {
+  await pool.query(
+    `INSERT INTO telegram_alert_chats (chat_id, username, first_name, last_name, is_active)
+     VALUES (?, ?, ?, ?, 1)
+     ON DUPLICATE KEY UPDATE
+       username = VALUES(username),
+       first_name = VALUES(first_name),
+       last_name = VALUES(last_name),
+       is_active = 1`,
+    [
+      String(chat.id),
+      chat.username || null,
+      chat.first_name || null,
+      chat.last_name || null,
+    ]
+  );
+}
+
+async function getActiveTelegramAlertChats() {
+  const [rows] = await pool.query(
+    "SELECT chat_id FROM telegram_alert_chats WHERE is_active = 1 ORDER BY id ASC"
+  );
+  return rows;
+}
+
+async function disableTelegramAlertChat(chatId) {
+  await pool.query("UPDATE telegram_alert_chats SET is_active = 0 WHERE chat_id = ?", [String(chatId)]);
+}
+
 async function createLoanApplication(application) {
   const [result] = await pool.query(
     `INSERT INTO loan_applications (
@@ -440,6 +469,9 @@ module.exports = {
   getReferralSettings,
   updateReferralSettings,
   getAgentsWithReferralStats,
+  upsertTelegramAlertChat,
+  getActiveTelegramAlertChats,
+  disableTelegramAlertChat,
   createLoanApplication,
   getLatestApplicationStatusByEmail,
   getLoanApplicationById,

@@ -165,5 +165,19 @@
         data: { email },
       });
     },
+    submitNewsletter(email) {
+      return request({
+        url: "/api/newsletter",
+        method: "POST",
+        data: { email },
+      });
+    },
+    submitContactMessage(message) {
+      return request({
+        url: "/api/contact",
+        method: "POST",
+        data: message,
+      });
+    },
   };
 })(window);

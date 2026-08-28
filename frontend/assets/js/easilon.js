@@ -581,53 +581,60 @@
         }
       },
       submitHandler: function (form) {
-        // sending value with ajax request
-        $.post(
-          $(form).attr("action"),
-          $(form).serialize(),
-          function (response) {
-            $(form).parent().find(".result").append(response);
-            $(form).find('input[type="text"]').val("");
-            $(form).find('input[type="email"]').val("");
-            $(form).find("textarea").val("");
-          }
-        );
+        var $form = $(form);
+        var $result = $form.parent().find(".result");
+        var formData = new FormData(form);
+        var payload = {};
+
+        formData.forEach(function (value, key) {
+          payload[key] = value;
+        });
+
+        if (!payload.subject) {
+          payload.subject = $form.find("select option:selected").text() || "Website message";
+        }
+
+        window.MTLApi.submitContactMessage(payload)
+          .then(function (response) {
+            $result.html('<p class="mc-message">' + (response.message || "Your message was sent successfully.") + "</p>");
+            $form.find('input[type="text"]').val("");
+            $form.find('input[type="email"]').val("");
+            $form.find("textarea").val("");
+          })
+          .catch(function (error) {
+            $result.html('<p class="mc-message">' + error.message + "</p>");
+          });
         return false;
       }
     });
   }
 
-  // mailchimp form
+  // newsletter form
   if ($(".mc-form").length) {
     $(".mc-form").each(function () {
       var Self = $(this);
-      var mcURL = Self.data("url");
       var mcResp = Self.parent().find(".mc-form__response");
 
-      Self.ajaxChimp({
-        url: mcURL,
-        callback: function (resp) {
-          // appending response
-          mcResp.append(function () {
-            return '<p class="mc-message">' + resp.msg + "</p>";
-          });
-          // making things based on response
-          if (resp.result === "success") {
-            // Do stuff
+      Self.on("submit", function (event) {
+        event.preventDefault();
+
+        var email = Self.find('input[name="EMAIL"], input[name="email"]').val();
+        mcResp.removeClass("errored successed").html("");
+
+        window.MTLApi.submitNewsletter(email)
+          .then(function (response) {
             Self.removeClass("errored").addClass("successed");
             mcResp.removeClass("errored").addClass("successed");
+            mcResp.html('<p class="mc-message">' + (response.message || "Thank you for subscribing.") + "</p>");
             Self.find("input").val("");
-
             mcResp.find("p").fadeOut(10000);
-          }
-          if (resp.result === "error") {
+          })
+          .catch(function (error) {
             Self.removeClass("successed").addClass("errored");
             mcResp.removeClass("successed").addClass("errored");
-            Self.find("input").val("");
-
+            mcResp.html('<p class="mc-message">' + error.message + "</p>");
             mcResp.find("p").fadeOut(10000);
-          }
-        }
+          });
       });
     });
   }

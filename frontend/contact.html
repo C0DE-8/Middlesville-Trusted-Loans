@@ -220,7 +220,7 @@
                                 <div class="form-one__control form-one__control--full">
                                     <div class="form-one__control__select">
                                         <label class="sr-only" for="select-subject">Select Subject</label>
-                                        <select class="selectpicker" id="select-subject" aria-label="Subject line">
+                                        <select class="selectpicker" id="select-subject" name="subject" aria-label="Subject line">
                                             <option selected>Select Subject</option>
                                             <option value="1">home loan</option>
                                             <option value="2">personal loan</option>
@@ -239,6 +239,7 @@
                                 </div><!-- /.form-one__control -->
                             </div><!-- /.form-one__group -->
                         </form>
+                        <div class="result" aria-live="polite"></div>
                     </div><!-- /.col-lg-6 -->
                 </div><!-- /.row gutter-y-50 -->
             </div><!-- /.container -->
@@ -451,5 +452,7 @@
     <script src="assets/vendors/jquery-circleType/jquery.circleType.js"></script>
     <script src="assets/vendors/jquery-lettering/jquery.lettering.min.js"></script>
     <!-- site js -->
-    <script src="assets/js/easilon.js"></script>
+    <script src="assets/vendors/axios/axios.min.js"></script>
+    <script src="assets/js/axios.js?v=20260828-2"></script>
+    <script src="assets/js/easilon.js?v=20260828-2"></script>
 </body></html>

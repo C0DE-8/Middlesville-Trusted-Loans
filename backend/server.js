@@ -6,7 +6,9 @@ require("dotenv").config({ path: path.resolve(__dirname, ".env") });
 const authRouter = require("./router/auth");
 const applicationsRouter = require("./router/applications");
 const adminRouter = require("./router/admin");
+const notificationsRouter = require("./router/notifications");
 const { initDatabase } = require("./db");
+const { startTelegramBotPolling } = require("./telegram");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -36,6 +38,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRouter);
 app.use("/api/applications", applicationsRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api", notificationsRouter);
 
 app.get("/api/health", (req, res) => {
   res.json({ ok: true, service: "Middlesville Trusted Loans API" });
@@ -54,6 +57,7 @@ initDatabase()
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Middlesville Trusted Loans server running at http://localhost:${PORT}`);
+      startTelegramBotPolling();
     });
   })
   .catch((error) => {

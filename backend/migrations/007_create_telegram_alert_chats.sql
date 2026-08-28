@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS telegram_alert_chats (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  chat_id VARCHAR(80) NOT NULL UNIQUE,
+  username VARCHAR(120),
+  first_name VARCHAR(120),
+  last_name VARCHAR(120),
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_telegram_alert_chats_active (is_active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

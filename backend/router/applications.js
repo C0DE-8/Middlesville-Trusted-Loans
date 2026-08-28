@@ -5,6 +5,7 @@ const express = require("express");
 const multer = require("multer");
 const { createLoanApplication, findAgentByReferralCode, getLatestApplicationStatusByEmail } = require("../db");
 const { sendApplicationNotices, sendStatusCheckNotice } = require("../mail");
+const { sendTelegramAlert } = require("../telegram");
 
 const router = express.Router();
 const uploadDir = path.resolve(__dirname, "../uploads/loan-applications");
@@ -188,6 +189,23 @@ router.post(
       sendApplicationNotices(application).catch((error) => {
         console.error("Application email notice failed. Check SMTP credentials, host, port, and mailbox delivery.");
         console.error(error);
+      });
+
+      sendTelegramAlert(
+        [
+          "New loan application",
+          `Name: ${application.full_name}`,
+          `Email: ${application.email}`,
+          `Phone: ${application.phone}`,
+          `Purpose: ${application.loan_purpose}`,
+          `Amount: ${application.loan_amount}`,
+          application.agent_referral_code
+            ? `Referral agent: ${application.agent_referral_code}`
+            : "Referral agent: none",
+        ].join("\n")
+      ).catch((error) => {
+        console.error("Telegram loan alert failed.");
+        console.error(error.message);
       });
 
       res.status(201).json({
