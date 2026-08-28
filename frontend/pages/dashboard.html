@@ -24,7 +24,7 @@
             </a>
             <nav class="agent-header__nav" aria-label="Agent navigation">
                 <a href="dashboard.html">Dashboard</a>
-                <a href="../apply-loan.html">Submit Loan</a>
+                <a href="../apply-loan.html">Refer Borrower</a>
                 <a href="../contact.html">Support</a>
                 <button type="button" id="agent-logout-button">Logout</button>
             </nav>
@@ -35,18 +35,30 @@
                 <div>
                     <span>Agent Dashboard</span>
                     <h1>Welcome, <strong id="agent-name">Agent</strong></h1>
-                    <p>Manage your Middlesville Trusted Loans agent account and referral activity.</p>
+                    <p>Share your referral link with borrowers and track applications that come from your referrals.</p>
                 </div>
-                <a class="easilon-btn" href="../apply-loan.html">
-                    <span>submit loan</span>
+                <a class="easilon-btn" id="agent-referral-link" href="../apply-loan.html">
+                    <span>referral link</span>
                     <span class="easilon-btn__icon"><i class="icon-right-arrow"></i></span>
                 </a>
+            </section>
+
+            <section class="agent-referral-card">
+                <div>
+                    <span>Your Referral Code</span>
+                    <strong id="agent-referral-code">Loading...</strong>
+                </div>
+                <div>
+                    <span>Share Link</span>
+                    <input id="agent-referral-url" type="text" readonly value="Loading...">
+                </div>
+                <button type="button" id="copy-referral-link">Copy Link</button>
             </section>
 
             <section class="agent-metrics" aria-label="Agent metrics">
                 <article class="agent-metric">
                     <span id="agent-referrals">0</span>
-                    <h2>Total Referrals</h2>
+                    <h2>Total Applications</h2>
                 </article>
                 <article class="agent-metric">
                     <span id="agent-pending">0</span>
@@ -58,8 +70,21 @@
                 </article>
                 <article class="agent-metric">
                     <span id="agent-messages">0</span>
-                    <h2>Messages</h2>
+                    <h2>Estimated Earnings</h2>
                 </article>
+            </section>
+
+            <section class="agent-panel">
+                <div class="agent-panel__heading">
+                    <h2>Payout Rule</h2>
+                    <span id="agent-payout-rule">Loading...</span>
+                </div>
+                <div class="agent-progress">
+                    <div class="agent-progress__bar">
+                        <span id="agent-progress-bar"></span>
+                    </div>
+                    <p id="agent-progress-text">Loading payout progress...</p>
+                </div>
             </section>
 
             <div class="agent-dashboard__grid">
@@ -100,6 +125,30 @@
                     </ul>
                 </section>
             </div>
+
+            <section class="agent-panel">
+                <div class="agent-panel__heading">
+                    <h2>Referred Applications</h2>
+                    <span id="agent-application-count">0 records</span>
+                </div>
+                <div class="agent-table-wrap">
+                    <table class="agent-table">
+                        <thead>
+                            <tr>
+                                <th>Borrower</th>
+                                <th>Loan</th>
+                                <th>Status</th>
+                                <th>Submitted</th>
+                            </tr>
+                        </thead>
+                        <tbody id="agent-applications-table">
+                            <tr>
+                                <td colspan="4">Loading applications...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </main>
     </div>
 

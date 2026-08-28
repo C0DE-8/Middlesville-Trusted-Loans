@@ -2,8 +2,11 @@ const express = require("express");
 const { requireAdminAuth } = require("../middleware/auth");
 const {
   getDashboardData,
+  getAgentsWithReferralStats,
   getLoanApplicationDocument,
+  getReferralSettings,
   updateLoanApplicationStatus,
+  updateReferralSettings,
   deleteLoanApplication,
 } = require("../db");
 const { sendLoanDecisionNotice } = require("../mail");
@@ -28,6 +31,48 @@ router.get("/dashboard", async (req, res, next) => {
         "Admin credentials are loaded from the database",
       ],
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/agents", async (req, res, next) => {
+  try {
+    const data = await getAgentsWithReferralStats();
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/referral-settings", async (req, res, next) => {
+  try {
+    const settings = await getReferralSettings();
+    res.json({ settings });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/referral-settings", async (req, res, next) => {
+  try {
+    const requiredApprovedApplications = Number(req.body.requiredApprovedApplications);
+    const payoutAmount = Number(req.body.payoutAmount);
+
+    if (!Number.isInteger(requiredApprovedApplications) || requiredApprovedApplications < 1) {
+      return res.status(400).json({ message: "Required approved applications must be at least 1." });
+    }
+
+    if (!Number.isFinite(payoutAmount) || payoutAmount < 0) {
+      return res.status(400).json({ message: "Payout amount must be 0 or more." });
+    }
+
+    const settings = await updateReferralSettings({
+      required_approved_applications: requiredApprovedApplications,
+      payout_amount: payoutAmount,
+    });
+
+    res.json({ settings });
   } catch (error) {
     next(error);
   }

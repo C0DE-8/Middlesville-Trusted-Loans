@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const express = require("express");
 const multer = require("multer");
-const { createLoanApplication, getLatestApplicationStatusByEmail } = require("../db");
+const { createLoanApplication, findAgentByReferralCode, getLatestApplicationStatusByEmail } = require("../db");
 const { sendApplicationNotices, sendStatusCheckNotice } = require("../mail");
 
 const router = express.Router();
@@ -145,8 +145,13 @@ router.post(
         return res.status(400).json({ message: "ID card front and back uploads are required." });
       }
 
+      const referralCode = String(req.body.agent_referral_code || "").trim().toUpperCase();
+      const referringAgent = referralCode ? await findAgentByReferralCode(referralCode) : null;
+
       const ssnHash = crypto.createHash("sha256").update(ssnDigits).digest("hex");
       const application = {
+        agent_id: referringAgent && referringAgent.status === "active" ? referringAgent.id : null,
+        agent_referral_code: referringAgent && referringAgent.status === "active" ? referringAgent.referral_code : null,
         loan_amount: req.body.loan_amount,
         monthly_income: req.body.monthly_income,
         loan_purpose: req.body.loan_purpose,

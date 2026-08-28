@@ -128,6 +128,54 @@
     });
   }
 
+  function formatMoney(value) {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 2,
+    }).format(Number(value || 0));
+  }
+
+  function createReferralUrl(code) {
+    return `${window.location.origin}${window.location.pathname.replace(/\/pages\/dashboard\.html$/, "")}/apply-loan.html?ref=${encodeURIComponent(code)}`;
+  }
+
+  function renderAgentApplications(applications) {
+    const table = document.getElementById("agent-applications-table");
+    const count = document.getElementById("agent-application-count");
+    if (!table || !count) return;
+
+    count.textContent = `${applications.length} ${applications.length === 1 ? "record" : "records"}`;
+    table.innerHTML = "";
+
+    if (!applications.length) {
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+      cell.colSpan = 4;
+      cell.textContent = "No referred applications yet.";
+      row.appendChild(cell);
+      table.appendChild(row);
+      return;
+    }
+
+    applications.forEach((application) => {
+      const row = document.createElement("tr");
+
+      [
+        `${application.full_name || "Borrower"}\n${application.email || ""}`,
+        `${application.loan_purpose || "Loan"}\n${formatMoney(application.loan_amount)}`,
+        application.status || "pending",
+        formatDate(application.created_at),
+      ].forEach((value) => {
+        const cell = document.createElement("td");
+        cell.textContent = value;
+        row.appendChild(cell);
+      });
+
+      table.appendChild(row);
+    });
+  }
+
   async function initAgentDashboard() {
     const dashboard = document.getElementById("agent-dashboard");
     if (!dashboard) return;
@@ -141,6 +189,13 @@
       const data = await window.MTLApi.agentDashboard();
       const agent = data.agent || {};
       const metrics = data.metrics || {};
+      const settings = data.settings || {};
+      const referralCode = agent.referralCode || "";
+      const referralUrl = createReferralUrl(referralCode);
+      const requiredApproved = Number(settings.requiredApprovedApplications || 5);
+      const approvedApplications = Number(metrics.approvedApplications || 0);
+      const progressCount = requiredApproved > 0 ? approvedApplications % requiredApproved : 0;
+      const progressPercent = requiredApproved > 0 ? Math.min((progressCount / requiredApproved) * 100, 100) : 0;
 
       setText("agent-name", agent.fullName || "Agent");
       setText("agent-email", agent.email || "");
@@ -148,10 +203,33 @@
       setText("agent-company", agent.companyName || "Independent agent");
       setText("agent-created", formatDate(agent.createdAt));
       setText("agent-last-login", formatDate(agent.lastLoginAt));
+      setText("agent-referral-code", referralCode);
       setText("agent-referrals", metrics.referrals || 0);
       setText("agent-pending", metrics.pendingApplications || 0);
       setText("agent-approved", metrics.approvedApplications || 0);
-      setText("agent-messages", metrics.messages || 0);
+      setText("agent-messages", formatMoney(metrics.estimatedEarnings));
+      setText(
+        "agent-payout-rule",
+        `${requiredApproved} approved applications = ${formatMoney(settings.payoutAmount)}`
+      );
+      setText(
+        "agent-progress-text",
+        `${progressCount} of ${requiredApproved} approved applications toward the next payout cycle.`
+      );
+
+      const referralLink = document.getElementById("agent-referral-link");
+      const referralUrlInput = document.getElementById("agent-referral-url");
+      const progressBar = document.getElementById("agent-progress-bar");
+
+      if (referralLink) {
+        referralLink.href = referralUrl;
+      }
+      if (referralUrlInput) {
+        referralUrlInput.value = referralUrl;
+      }
+      if (progressBar) {
+        progressBar.style.width = `${progressPercent}%`;
+      }
 
       const activityList = document.getElementById("agent-activity");
       if (activityList) {
@@ -162,6 +240,8 @@
           activityList.appendChild(li);
         });
       }
+
+      renderAgentApplications(data.applications || []);
 
       dashboard.classList.remove("agent-dashboard--loading");
     } catch (error) {
@@ -177,6 +257,26 @@
         } finally {
           window.MTLApi.clearAgentToken();
           window.location.href = "../login.html";
+        }
+      });
+    }
+
+    const copyButton = document.getElementById("copy-referral-link");
+    if (copyButton) {
+      copyButton.addEventListener("click", async () => {
+        const referralUrlInput = document.getElementById("agent-referral-url");
+        const value = referralUrlInput ? referralUrlInput.value : "";
+        if (!value) return;
+
+        try {
+          await navigator.clipboard.writeText(value);
+          copyButton.textContent = "Copied";
+          window.setTimeout(() => {
+            copyButton.textContent = "Copy Link";
+          }, 1500);
+        } catch (error) {
+          referralUrlInput.select();
+          document.execCommand("copy");
         }
       });
     }

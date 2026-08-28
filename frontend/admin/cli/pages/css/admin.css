@@ -72,6 +72,11 @@ body.admin-modal-open {
   gap: 12px;
 }
 
+.admin-form--inline {
+  grid-template-columns: repeat(2, minmax(180px, 1fr)) auto;
+  align-items: end;
+}
+
 .admin-form label {
   font-size: 14px;
   font-weight: 700;
@@ -147,6 +152,14 @@ body.admin-modal-open {
   margin: 2px 0 0;
   color: #b42318;
   font-size: 14px;
+}
+
+.admin-form--inline .admin-form__message {
+  grid-column: 1 / -1;
+}
+
+.admin-form__message--success {
+  color: var(--admin-accent-dark);
 }
 
 .admin-header {
@@ -411,9 +424,19 @@ body.admin-modal-open {
   background: #dcfae6;
 }
 
+.admin-status--active {
+  color: #067647;
+  background: #dcfae6;
+}
+
 .admin-status--rejected {
   color: #b42318;
   background: #fee4e2;
+}
+
+.admin-status--disabled {
+  color: #344054;
+  background: #eef2f6;
 }
 
 .admin-actions {
@@ -623,6 +646,10 @@ body.admin-modal-open {
   }
 
   .admin-shortcuts {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-form--inline {
     grid-template-columns: 1fr;
   }
 

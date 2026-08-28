@@ -113,6 +113,7 @@
     initNumberOnlyInputs(loanApplicationForm);
     initCardExpirationInputs(loanApplicationForm);
     initIdUploadPreviews(loanApplicationForm);
+    initAgentReferralCode(loanApplicationForm);
 
     loanApplicationForm.addEventListener("submit", async function (event) {
       event.preventDefault();
@@ -146,6 +147,7 @@
         const data = await window.MTLApi.submitLoanApplication(formData);
 
         loanApplicationForm.reset();
+        initAgentReferralCode(loanApplicationForm);
         clearIdUploadPreviews(loanApplicationForm);
         $(".selectpicker").selectpicker("refresh");
 
@@ -168,6 +170,21 @@
         }
       }
     });
+  }
+
+  function initAgentReferralCode(form) {
+    const input = form.querySelector("input[name='agent_referral_code']");
+    if (!input) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const referralCode = String(params.get("ref") || window.localStorage.getItem("mtl_agent_referral_code") || "")
+      .trim()
+      .toUpperCase();
+
+    if (referralCode) {
+      window.localStorage.setItem("mtl_agent_referral_code", referralCode);
+      input.value = referralCode;
+    }
   }
 
   document.addEventListener("input", function (event) {

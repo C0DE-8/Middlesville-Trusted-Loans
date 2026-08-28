@@ -104,6 +104,16 @@
     dashboard() {
       return request({ url: "/api/admin/dashboard", method: "GET" });
     },
+    agents() {
+      return request({ url: "/api/admin/agents", method: "GET" });
+    },
+    updateReferralSettings(requiredApprovedApplications, payoutAmount) {
+      return request({
+        url: "/api/admin/referral-settings",
+        method: "PUT",
+        data: { requiredApprovedApplications, payoutAmount },
+      });
+    },
     updateApplicationStatus(id, status) {
       return request({
         url: `/api/admin/applications/${id}/status`,

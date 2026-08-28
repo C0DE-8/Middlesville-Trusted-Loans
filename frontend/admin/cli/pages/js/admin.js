@@ -89,6 +89,10 @@ async function initDashboard() {
     window.location.href = "index.html";
   }
 
+  bindAdminLogout();
+}
+
+function bindAdminLogout() {
   const logoutButton = document.getElementById("logout-button");
   if (!logoutButton) return;
 
@@ -99,6 +103,137 @@ async function initDashboard() {
       clearToken();
       window.location.href = "index.html";
     }
+  });
+}
+
+async function initAgentsPage() {
+  const agentsTable = document.getElementById("agents-table");
+  const settingsForm = document.getElementById("referral-settings-form");
+  if (!agentsTable || !settingsForm) return;
+
+  try {
+    const [me, agentsData] = await Promise.all([
+      window.MTLApi.me(),
+      window.MTLApi.agents(),
+    ]);
+
+    setText("admin-name", me.admin.username);
+    renderReferralSettings(agentsData.settings);
+    renderAgents(agentsData.agents || []);
+    bindAdminLogout();
+  } catch (error) {
+    clearToken();
+    window.location.href = "index.html";
+    return;
+  }
+
+  settingsForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const message = document.getElementById("referral-settings-message");
+    const submitButton = settingsForm.querySelector("button[type='submit']");
+    const submitLabel = submitButton ? submitButton.querySelector(".admin-button__label") : null;
+    const formData = new FormData(settingsForm);
+
+    if (message) {
+      message.textContent = "";
+      message.classList.remove("admin-form__message--success");
+    }
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.classList.add("is-loading");
+    }
+    if (submitLabel) {
+      submitLabel.textContent = "Saving";
+    }
+
+    try {
+      await window.MTLApi.updateReferralSettings(
+        Number(formData.get("requiredApprovedApplications")),
+        Number(formData.get("payoutAmount"))
+      );
+      const agentsData = await window.MTLApi.agents();
+      renderReferralSettings(agentsData.settings);
+      renderAgents(agentsData.agents || []);
+      if (message) {
+        message.textContent = "Referral payout rule saved.";
+        message.classList.add("admin-form__message--success");
+      }
+    } catch (error) {
+      if (message) {
+        message.textContent = error.message;
+      }
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.classList.remove("is-loading");
+      }
+      if (submitLabel) {
+        submitLabel.textContent = "Save Rule";
+      }
+    }
+  });
+}
+
+function renderReferralSettings(settings) {
+  if (!settings) return;
+
+  const requiredInput = document.getElementById("required-approved-applications");
+  const payoutInput = document.getElementById("payout-amount");
+
+  if (requiredInput) {
+    requiredInput.value = settings.required_approved_applications || 5;
+  }
+  if (payoutInput) {
+    payoutInput.value = Number(settings.payout_amount || 0).toFixed(2);
+  }
+
+  setText("referral-settings-updated", `Updated ${formatDate(settings.updated_at)}`);
+}
+
+function renderAgents(agents) {
+  const table = document.getElementById("agents-table");
+  const count = document.getElementById("agent-count");
+  if (!table || !count) return;
+
+  count.textContent = `${agents.length} ${agents.length === 1 ? "agent" : "agents"}`;
+  table.innerHTML = "";
+
+  if (!agents.length) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.colSpan = 5;
+    cell.textContent = "No agents have registered yet.";
+    row.appendChild(cell);
+    table.appendChild(row);
+    return;
+  }
+
+  agents.forEach((agent) => {
+    const row = document.createElement("tr");
+
+    row.appendChild(createStackedCell([
+      ["Name", agent.full_name],
+      ["Email", agent.email],
+      ["Company", agent.company_name || "Independent"],
+    ]));
+    row.appendChild(createStackedCell([
+      ["Code", agent.referral_code],
+      ["Joined", formatDate(agent.created_at)],
+    ]));
+    row.appendChild(createStackedCell([
+      ["Total", agent.total_referrals],
+      ["Pending", agent.pending_applications],
+      ["Approved", agent.approved_applications],
+      ["Rejected", agent.rejected_applications],
+    ]));
+    row.appendChild(createStackedCell([
+      ["Cycles", agent.qualified_cycles],
+      ["Estimated", formatMoney(agent.estimated_earnings)],
+    ]));
+    row.appendChild(createStatusCell(agent.status));
+
+    table.appendChild(row);
   });
 }
 
@@ -178,6 +313,7 @@ function renderApplications(applications) {
     row.appendChild(createStackedCell([
       ["Email", application.email],
       ["Phone", application.phone],
+      ["Referred By", application.agent_full_name || application.agent_referral_code],
     ]));
     row.appendChild(createStackedCell([
       ["SSN", application.ssn || application.ssn_last4 || "Not available"],
@@ -389,6 +525,8 @@ function showApplicationDetails(application) {
     ["Term", application.loan_years],
     ["Status", application.status],
     ["Submitted", formatDate(application.created_at)],
+    ["Referral Code", application.agent_referral_code],
+    ["Referral Agent", application.agent_full_name],
   ]));
   body.appendChild(createDetailSection("Personal", [
     ["Full Name", application.full_name],
@@ -563,6 +701,14 @@ function formatDate(value) {
   });
 }
 
+function formatMoney(value) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+  }).format(Number(value || 0));
+}
+
 function maskCard(value) {
   if (!value) return "Not available";
 
@@ -574,3 +720,4 @@ function maskCard(value) {
 
 initLogin();
 initDashboard();
+initAgentsPage();

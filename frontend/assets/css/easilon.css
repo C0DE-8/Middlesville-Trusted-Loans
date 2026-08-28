@@ -11585,6 +11585,62 @@ li:hover .sidebar__comments__icon {
   font-weight: 500;
 }
 
+.agent-referral-card {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.4fr) minmax(260px, 1fr) auto;
+  gap: 18px;
+  align-items: end;
+  margin-bottom: 22px;
+  padding: 22px;
+  background: var(--easilon-white, #ffffff);
+  border: 1px solid rgba(0, 205, 229, 0.35);
+  border-radius: 8px;
+}
+
+.agent-referral-card div {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.agent-referral-card span {
+  color: var(--easilon-text, #82828A);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.agent-referral-card strong {
+  color: var(--easilon-black, #2B2B5E);
+  font-size: 22px;
+  overflow-wrap: anywhere;
+}
+
+.agent-referral-card input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--easilon-border-color, #E6E6ED);
+  border-radius: 6px;
+  color: var(--easilon-black, #2B2B5E);
+  font-weight: 700;
+  background: var(--easilon-white2, #F6F6F8);
+}
+
+.agent-referral-card button {
+  min-height: 46px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--easilon-white, #ffffff);
+  font-weight: 800;
+  background: var(--easilon-black, #2B2B5E);
+}
+
+.agent-referral-card button:hover {
+  background: var(--easilon-base, #00CDE5);
+}
+
 .agent-metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -11629,6 +11685,10 @@ li:hover .sidebar__comments__icon {
 }
 
 .agent-panel__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   margin-bottom: 20px;
   padding-bottom: 15px;
   border-bottom: 1px solid var(--easilon-border-color, #E6E6ED);
@@ -11638,6 +11698,38 @@ li:hover .sidebar__comments__icon {
   margin: 0;
   font-size: 22px;
   line-height: 1.2;
+}
+
+.agent-panel__heading span {
+  color: var(--easilon-text, #82828A);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.agent-progress {
+  display: grid;
+  gap: 10px;
+}
+
+.agent-progress__bar {
+  height: 12px;
+  overflow: hidden;
+  background: var(--easilon-white2, #F6F6F8);
+  border-radius: 999px;
+}
+
+.agent-progress__bar span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--easilon-base, #00CDE5);
+  transition: width 300ms ease;
+}
+
+.agent-progress p {
+  margin: 0;
+  color: var(--easilon-text, #82828A);
+  font-weight: 600;
 }
 
 .agent-profile {
@@ -11695,6 +11787,35 @@ li:hover .sidebar__comments__icon {
   background: var(--easilon-base, #00CDE5);
 }
 
+.agent-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.agent-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+}
+
+.agent-table th,
+.agent-table td {
+  padding: 14px 12px;
+  border-top: 1px solid var(--easilon-border-color, #E6E6ED);
+  color: var(--easilon-black, #2B2B5E);
+  font-size: 14px;
+  line-height: 1.45;
+  text-align: left;
+  white-space: pre-line;
+}
+
+.agent-table th {
+  color: var(--easilon-text, #82828A);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
 @media (max-width: 991px) {
   .agent-dashboard__intro,
   .agent-header {
@@ -11703,7 +11824,8 @@ li:hover .sidebar__comments__icon {
   }
 
   .agent-metrics,
-  .agent-dashboard__grid {
+  .agent-dashboard__grid,
+  .agent-referral-card {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -11715,7 +11837,8 @@ li:hover .sidebar__comments__icon {
   }
 
   .agent-metrics,
-  .agent-dashboard__grid {
+  .agent-dashboard__grid,
+  .agent-referral-card {
     grid-template-columns: 1fr;
   }
 

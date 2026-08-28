@@ -20,6 +20,7 @@ function normalizeEmail(email) {
 function serializeAgent(agent) {
   return {
     id: agent.id,
+    referralCode: agent.referral_code,
     fullName: agent.full_name,
     email: agent.email,
     phone: agent.phone,
@@ -27,6 +28,14 @@ function serializeAgent(agent) {
     status: agent.status,
     lastLoginAt: agent.last_login_at,
     createdAt: agent.created_at,
+  };
+}
+
+function serializeReferralSettings(settings) {
+  return {
+    requiredApprovedApplications: settings.required_approved_applications,
+    payoutAmount: Number(settings.payout_amount),
+    updatedAt: settings.updated_at,
   };
 }
 
@@ -182,7 +191,9 @@ router.get("/agent/dashboard", requireAgentAuth, async (req, res, next) => {
 
     return res.json({
       agent: serializeAgent(dashboard.agent),
+      settings: serializeReferralSettings(dashboard.settings),
       metrics: dashboard.metrics,
+      applications: dashboard.applications,
       recentActivity: dashboard.recentActivity,
     });
   } catch (error) {
