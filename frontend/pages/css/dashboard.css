@@ -1,0 +1,358 @@
+:root {
+  --agent-ink: #2b2b5e;
+  --agent-muted: #82828a;
+  --agent-cyan: #00cde5;
+  --agent-surface: #ffffff;
+  --agent-background: #f6f6f8;
+  --agent-border: #e6e6ed;
+}
+
+.agent-shell {
+  min-height: 100vh;
+  color: var(--agent-ink);
+  background: var(--agent-background);
+  font-family: "Montserrat", sans-serif;
+}
+
+.agent-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px clamp(20px, 5vw, 70px);
+  background: var(--agent-surface);
+  border-bottom: 1px solid var(--agent-border);
+}
+
+.agent-header__logo {
+  display: inline-flex;
+  align-items: center;
+}
+
+.agent-header__logo img {
+  display: block;
+  max-width: 150px;
+  height: auto;
+}
+
+.agent-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.agent-header__nav a,
+.agent-header__nav button {
+  color: var(--agent-ink);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.agent-header__nav a:hover {
+  color: var(--agent-cyan);
+}
+
+.agent-header__nav button,
+.agent-referral-card button {
+  min-height: 42px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--agent-surface);
+  background: var(--agent-ink);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.agent-header__nav button:hover,
+.agent-referral-card button:hover {
+  background: var(--agent-cyan);
+}
+
+.agent-dashboard {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 52px 0 70px;
+}
+
+.agent-dashboard__intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.agent-dashboard__intro span,
+.agent-referral-card span,
+.agent-profile dt,
+.agent-table th {
+  color: var(--agent-muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.agent-dashboard__intro span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--agent-cyan);
+  font-size: 13px;
+}
+
+.agent-dashboard__intro h1 {
+  margin: 0;
+  color: var(--agent-ink);
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.12;
+}
+
+.agent-dashboard__intro p {
+  max-width: 620px;
+  margin: 12px 0 0;
+  color: var(--agent-muted);
+  font-weight: 500;
+}
+
+.agent-referral-card,
+.agent-metric,
+.agent-panel {
+  background: var(--agent-surface);
+  border: 1px solid var(--agent-border);
+  border-radius: 8px;
+}
+
+.agent-referral-card {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.4fr) minmax(260px, 1fr) auto;
+  gap: 18px;
+  align-items: end;
+  margin-bottom: 22px;
+  padding: 22px;
+  border-color: rgba(0, 205, 229, 0.35);
+}
+
+.agent-referral-card div {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.agent-referral-card strong {
+  color: var(--agent-ink);
+  font-size: 22px;
+  overflow-wrap: anywhere;
+}
+
+.agent-referral-card input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--agent-border);
+  border-radius: 6px;
+  color: var(--agent-ink);
+  background: var(--agent-background);
+  font-weight: 700;
+}
+
+.agent-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.agent-metric {
+  padding: 24px;
+}
+
+.agent-metric span {
+  display: block;
+  color: var(--agent-cyan);
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.agent-metric h2,
+.agent-panel__heading h2 {
+  color: var(--agent-ink);
+}
+
+.agent-metric h2 {
+  margin: 10px 0 0;
+  color: var(--agent-muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.agent-panel {
+  margin-bottom: 22px;
+  padding: 26px;
+}
+
+.agent-dashboard__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 22px;
+}
+
+.agent-dashboard__grid .agent-panel {
+  margin-bottom: 0;
+}
+
+.agent-panel__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--agent-border);
+}
+
+.agent-panel__heading h2 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.agent-panel__heading span {
+  color: var(--agent-muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.agent-progress {
+  display: grid;
+  gap: 10px;
+}
+
+.agent-progress__bar {
+  height: 12px;
+  overflow: hidden;
+  background: var(--agent-background);
+  border-radius: 999px;
+}
+
+.agent-progress__bar span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--agent-cyan);
+  transition: width 300ms ease;
+}
+
+.agent-progress p {
+  margin: 0;
+  color: var(--agent-muted);
+  font-weight: 600;
+}
+
+.agent-profile {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+}
+
+.agent-profile div {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.agent-profile dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--agent-ink);
+  font-weight: 700;
+}
+
+.agent-activity {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.agent-activity li {
+  position: relative;
+  padding-left: 18px;
+  color: var(--agent-muted);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.agent-activity li::before {
+  position: absolute;
+  top: 0.7em;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--agent-cyan);
+  content: "";
+}
+
+.agent-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.agent-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+}
+
+.agent-table th,
+.agent-table td {
+  padding: 14px 12px;
+  border-top: 1px solid var(--agent-border);
+  color: var(--agent-ink);
+  font-size: 14px;
+  line-height: 1.45;
+  text-align: left;
+  white-space: pre-line;
+}
+
+.agent-table th {
+  font-weight: 900;
+}
+
+@media (max-width: 991px) {
+  .agent-dashboard__intro,
+  .agent-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .agent-metrics,
+  .agent-dashboard__grid,
+  .agent-referral-card {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 575px) {
+  .agent-dashboard {
+    width: min(100% - 28px, 1180px);
+    padding-top: 34px;
+  }
+
+  .agent-metrics,
+  .agent-dashboard__grid,
+  .agent-referral-card {
+    grid-template-columns: 1fr;
+  }
+
+  .agent-profile div {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+}
