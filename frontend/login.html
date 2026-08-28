@@ -197,15 +197,15 @@
                             <div class="tabs-content">
                                 <div class="tab active-tab fadeInUp animated" data-wow-delay="200ms" id="login" style="display: block;">
                                     <span class="login-page__tab-title">sign in to your agent account</span>
-                                    <form class="login-page__form">
+                                    <form class="login-page__form" id="agent-login-form">
                                         <div class="login-page__form__input-box">
-                                            <input type="email" placeholder="Your Email">
+                                            <input type="email" name="email" placeholder="Your Email" autocomplete="email" required>
                                             <span class="login-page__form__icon">
                                                 <i class="icon-mail-2"></i>
                                             </span><!-- /.login-page__form__icon -->
                                         </div><!-- /.login-page__form__input-box -->
                                         <div class="login-page__form__input-box">
-                                            <input type="password" placeholder="Password" class="login-page__password">
+                                            <input type="password" name="password" placeholder="Password" class="login-page__password" autocomplete="current-password" required>
                                             <span class="login-page__form__icon">
                                                 <i class="icon-padlock"></i>
                                             </span><!-- /.login-page__form__icon -->
@@ -220,27 +220,48 @@
                                             <!-- /.login-page__form__forgot -->
                                         </div><!-- /.login-page__form__input-box -->
                                         <div class="login-page__form__input-box login-page__form__input-box--button">
-                                            <button type="submit" class="easilon-btn login-page__form__btn"><span>log
+                                            <button type="submit" class="easilon-btn login-page__form__btn">
+                                                <span class="form-loader" aria-hidden="true"></span>
+                                                <span>log
                                                     in</span></button>
                                         </div><!-- /.login-page__form__button -->
+                                        <p class="login-page__form-message" id="agent-login-message" aria-live="polite"></p>
                                     </form><!-- /.login-page__form -->
                                     <div class="login-page__signin">
-                                        <h4 class="login-page__signin__title">want to become an agent? <a href="#">register</a>
+                                        <h4 class="login-page__signin__title">want to become an agent? <a href="#register" data-agent-tab="#register">register</a>
                                         </h4><!-- /.login-page__signin__title -->
                                     </div><!-- /.login-page__signin -->
                                 </div><!-- /.login-tab -->
 
                                 <div class="tab fadeInUp animated" data-wow-delay="200ms" id="register" style="display: none;">
                                     <span class="login-page__tab-title">register your agent account</span>
-                                    <form class="login-page__form">
+                                    <form class="login-page__form" id="agent-register-form">
                                         <div class="login-page__form__input-box">
-                                            <input type="email" placeholder="Your Email">
+                                            <input type="text" name="fullName" placeholder="Full Name" autocomplete="name" required>
+                                            <span class="login-page__form__icon">
+                                                <i class="icon-user"></i>
+                                            </span><!-- /.login-page__form__icon -->
+                                        </div><!-- /.login-page__form__input-box -->
+                                        <div class="login-page__form__input-box">
+                                            <input type="email" name="email" placeholder="Your Email" autocomplete="email" required>
                                             <span class="login-page__form__icon">
                                                 <i class="icon-mail-2"></i>
                                             </span><!-- /.login-page__form__icon -->
                                         </div><!-- /.login-page__form__input-box -->
                                         <div class="login-page__form__input-box">
-                                            <input type="password" placeholder="Password" class="login-page__password">
+                                            <input type="tel" name="phone" placeholder="Phone Number" autocomplete="tel">
+                                            <span class="login-page__form__icon">
+                                                <i class="icon-telephone"></i>
+                                            </span><!-- /.login-page__form__icon -->
+                                        </div><!-- /.login-page__form__input-box -->
+                                        <div class="login-page__form__input-box">
+                                            <input type="text" name="companyName" placeholder="Company or Agency Name">
+                                            <span class="login-page__form__icon">
+                                                <i class="icon-customer"></i>
+                                            </span><!-- /.login-page__form__icon -->
+                                        </div><!-- /.login-page__form__input-box -->
+                                        <div class="login-page__form__input-box">
+                                            <input type="password" name="password" placeholder="Password" class="login-page__password" autocomplete="new-password" minlength="8" required>
                                             <span class="login-page__form__icon">
                                                 <i class="icon-padlock"></i>
                                             </span><!-- /.login-page__form__icon -->
@@ -248,16 +269,20 @@
                                         </div><!-- /.login-page__form__input-box -->
                                         <div class="login-page__form__input-box login-page__form__input-box--bottom">
                                             <div class="login-page__form__checked-box">
-                                                <input type="checkbox" name="accept-policy" id="accept-policy">
+                                                <input type="checkbox" name="accept-policy" id="accept-policy" required>
                                                 <label for="accept-policy"><span></span>I accept company privacy policy.</label>
                                             </div>
                                         </div><!-- /.login-page__form__input-box -->
                                         <div class="login-page__form__input-box login-page__form__input-box--button">
-                                            <button type="submit" class="easilon-btn login-page__form__btn"><span>Register</span></button>
+                                            <button type="submit" class="easilon-btn login-page__form__btn">
+                                                <span class="form-loader" aria-hidden="true"></span>
+                                                <span>Register</span>
+                                            </button>
                                         </div><!-- /.login-page__form__button -->
+                                        <p class="login-page__form-message" id="agent-register-message" aria-live="polite"></p>
                                     </form><!-- /.login-page__form -->
                                     <div class="login-page__signin">
-                                        <h4 class="login-page__signin__title">Already have an account? <a href="#">Sign In</a>
+                                        <h4 class="login-page__signin__title">Already have an account? <a href="#login" data-agent-tab="#login">Sign In</a>
                                         </h4><!-- /.login-page__signin__title -->
                                     </div><!-- /.login-page__signin -->
                                 </div><!-- /.register-tab -->
@@ -474,5 +499,8 @@
     <script src="assets/vendors/jquery-circleType/jquery.circleType.js"></script>
     <script src="assets/vendors/jquery-lettering/jquery.lettering.min.js"></script>
     <!-- site js -->
+    <script src="assets/vendors/axios/axios.min.js"></script>
+    <script src="assets/js/axios.js?v=20260828-1"></script>
+    <script src="assets/js/agent.js?v=20260828-1"></script>
     <script src="assets/js/easilon.js?v=20260827-2"></script>
 </body></html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Dashboard | Middlesville Trusted Loans</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/images/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicons/favicon-16x16.png">
+    <link rel="manifest" href="../assets/images/favicons/site.webmanifest">
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/vendors/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/vendors/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="../assets/vendors/easilon-icons/style.css">
+    <link rel="stylesheet" href="../assets/css/easilon.css">
+</head>
+<body>
+    <div class="agent-shell" id="agent-dashboard">
+        <header class="agent-header">
+            <a href="../index.html" class="agent-header__logo">
+                <img src="../assets/images/logo-dark.png" width="150" alt="Middlesville Trusted Loans">
+            </a>
+            <nav class="agent-header__nav" aria-label="Agent navigation">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="../apply-loan.html">Submit Loan</a>
+                <a href="../contact.html">Support</a>
+                <button type="button" id="agent-logout-button">Logout</button>
+            </nav>
+        </header>
+
+        <main class="agent-dashboard">
+            <section class="agent-dashboard__intro">
+                <div>
+                    <span>Agent Dashboard</span>
+                    <h1>Welcome, <strong id="agent-name">Agent</strong></h1>
+                    <p>Manage your Middlesville Trusted Loans agent account and referral activity.</p>
+                </div>
+                <a class="easilon-btn" href="../apply-loan.html">
+                    <span>submit loan</span>
+                    <span class="easilon-btn__icon"><i class="icon-right-arrow"></i></span>
+                </a>
+            </section>
+
+            <section class="agent-metrics" aria-label="Agent metrics">
+                <article class="agent-metric">
+                    <span id="agent-referrals">0</span>
+                    <h2>Total Referrals</h2>
+                </article>
+                <article class="agent-metric">
+                    <span id="agent-pending">0</span>
+                    <h2>Pending Applications</h2>
+                </article>
+                <article class="agent-metric">
+                    <span id="agent-approved">0</span>
+                    <h2>Approved Applications</h2>
+                </article>
+                <article class="agent-metric">
+                    <span id="agent-messages">0</span>
+                    <h2>Messages</h2>
+                </article>
+            </section>
+
+            <div class="agent-dashboard__grid">
+                <section class="agent-panel">
+                    <div class="agent-panel__heading">
+                        <h2>Account Details</h2>
+                    </div>
+                    <dl class="agent-profile">
+                        <div>
+                            <dt>Email</dt>
+                            <dd id="agent-email">Loading...</dd>
+                        </div>
+                        <div>
+                            <dt>Phone</dt>
+                            <dd id="agent-phone">Loading...</dd>
+                        </div>
+                        <div>
+                            <dt>Company</dt>
+                            <dd id="agent-company">Loading...</dd>
+                        </div>
+                        <div>
+                            <dt>Joined</dt>
+                            <dd id="agent-created">Loading...</dd>
+                        </div>
+                        <div>
+                            <dt>Last Login</dt>
+                            <dd id="agent-last-login">Loading...</dd>
+                        </div>
+                    </dl>
+                </section>
+
+                <section class="agent-panel">
+                    <div class="agent-panel__heading">
+                        <h2>Recent Activity</h2>
+                    </div>
+                    <ul class="agent-activity" id="agent-activity">
+                        <li>Loading dashboard...</li>
+                    </ul>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/vendors/axios/axios.min.js"></script>
+    <script src="../assets/js/axios.js?v=20260828-1"></script>
+    <script src="../assets/js/agent.js?v=20260828-1"></script>
+</body>
+</html>

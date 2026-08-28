@@ -90,6 +90,67 @@ async function findAdminByUsername(username) {
   return rows[0] || null;
 }
 
+async function findAgentByEmail(email) {
+  const [rows] = await pool.query(
+    `SELECT id, full_name, email, phone, company_name, password_hash, status, last_login_at, created_at
+     FROM agents
+     WHERE email = ?
+     LIMIT 1`,
+    [email]
+  );
+  return rows[0] || null;
+}
+
+async function findAgentById(id) {
+  const [rows] = await pool.query(
+    `SELECT id, full_name, email, phone, company_name, status, last_login_at, created_at
+     FROM agents
+     WHERE id = ?
+     LIMIT 1`,
+    [id]
+  );
+  return rows[0] || null;
+}
+
+async function createAgent(agent) {
+  const [result] = await pool.query(
+    `INSERT INTO agents (full_name, email, phone, company_name, password_hash)
+     VALUES (?, ?, ?, ?, ?)`,
+    [
+      agent.full_name,
+      agent.email,
+      agent.phone || null,
+      agent.company_name || null,
+      agent.password_hash,
+    ]
+  );
+
+  return findAgentById(result.insertId);
+}
+
+async function updateAgentLastLogin(id) {
+  await pool.query("UPDATE agents SET last_login_at = CURRENT_TIMESTAMP WHERE id = ?", [id]);
+}
+
+async function getAgentDashboardData(agentId) {
+  const agent = await findAgentById(agentId);
+
+  return {
+    agent,
+    metrics: {
+      referrals: 0,
+      pendingApplications: 0,
+      approvedApplications: 0,
+      messages: 0,
+    },
+    recentActivity: [
+      "Agent account is active",
+      "Referral tracking is ready for connected loan submissions",
+      "New agent tools will appear here as they are added",
+    ],
+  };
+}
+
 async function createLoanApplication(application) {
   const [result] = await pool.query(
     `INSERT INTO loan_applications (
@@ -237,6 +298,11 @@ module.exports = {
   pool,
   initDatabase,
   findAdminByUsername,
+  findAgentByEmail,
+  findAgentById,
+  createAgent,
+  updateAgentLastLogin,
+  getAgentDashboardData,
   createLoanApplication,
   getLatestApplicationStatusByEmail,
   getLoanApplicationById,

@@ -3,6 +3,7 @@
 
   const API_URL = window.MTL_API_URL || "https://api.middlesvilletrustedloans.com";
   const tokenKey = "mtl_admin_token";
+  const agentTokenKey = "mtl_agent_token";
   const client = window.axios.create({
     baseURL: API_URL,
     timeout: 20000,
@@ -10,7 +11,8 @@
 
   client.interceptors.request.use(function (config) {
     const token = window.localStorage.getItem(tokenKey);
-    if (token) {
+    config.headers = config.headers || {};
+    if (token && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -32,6 +34,7 @@
   window.MTLApi = {
     apiUrl: API_URL,
     tokenKey,
+    agentTokenKey,
     getToken() {
       return window.localStorage.getItem(tokenKey);
     },
@@ -40,6 +43,15 @@
     },
     clearToken() {
       window.localStorage.removeItem(tokenKey);
+    },
+    getAgentToken() {
+      return window.localStorage.getItem(agentTokenKey);
+    },
+    setAgentToken(token) {
+      window.localStorage.setItem(agentTokenKey, token);
+    },
+    clearAgentToken() {
+      window.localStorage.removeItem(agentTokenKey);
     },
     login(username, password) {
       return request({
@@ -53,6 +65,41 @@
     },
     logout() {
       return request({ url: "/api/auth/logout", method: "POST" });
+    },
+    agentLogin(email, password) {
+      return request({
+        url: "/api/auth/agent/login",
+        method: "POST",
+        data: { email, password },
+      });
+    },
+    agentRegister(agent) {
+      return request({
+        url: "/api/auth/agent/register",
+        method: "POST",
+        data: agent,
+      });
+    },
+    agentMe() {
+      return request({
+        url: "/api/auth/agent/me",
+        method: "GET",
+        headers: { Authorization: `Bearer ${window.localStorage.getItem(agentTokenKey) || ""}` },
+      });
+    },
+    agentDashboard() {
+      return request({
+        url: "/api/auth/agent/dashboard",
+        method: "GET",
+        headers: { Authorization: `Bearer ${window.localStorage.getItem(agentTokenKey) || ""}` },
+      });
+    },
+    agentLogout() {
+      return request({
+        url: "/api/auth/logout",
+        method: "POST",
+        headers: { Authorization: `Bearer ${window.localStorage.getItem(agentTokenKey) || ""}` },
+      });
     },
     dashboard() {
       return request({ url: "/api/admin/dashboard", method: "GET" });
