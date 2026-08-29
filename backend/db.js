@@ -280,6 +280,24 @@ async function getAgentsWithReferralStats() {
   };
 }
 
+async function deleteAgent(id) {
+  const [rows] = await pool.query(
+    `SELECT id, full_name, email
+     FROM agents
+     WHERE id = ?
+     LIMIT 1`,
+    [id]
+  );
+  const agent = rows[0] || null;
+
+  if (!agent) {
+    return null;
+  }
+
+  await pool.query("DELETE FROM agents WHERE id = ?", [id]);
+  return agent;
+}
+
 async function upsertTelegramAlertChat(chat) {
   await pool.query(
     `INSERT INTO telegram_alert_chats (chat_id, username, first_name, last_name, is_active)
@@ -476,6 +494,7 @@ module.exports = {
   getReferralSettings,
   updateReferralSettings,
   getAgentsWithReferralStats,
+  deleteAgent,
   upsertTelegramAlertChat,
   getActiveTelegramAlertChats,
   countActiveTelegramAlertChats,

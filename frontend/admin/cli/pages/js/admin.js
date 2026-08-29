@@ -261,7 +261,7 @@ function renderAgents(agents) {
   if (!agents.length) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 5;
+    cell.colSpan = 6;
     cell.textContent = "No agents have registered yet.";
     row.appendChild(cell);
     table.appendChild(row);
@@ -291,9 +291,46 @@ function renderAgents(agents) {
       ["Estimated", formatMoney(agent.estimated_earnings)],
     ]));
     row.appendChild(createStatusCell(agent.status));
+    row.appendChild(createAgentActionsCell(agent));
 
     table.appendChild(row);
   });
+}
+
+function createAgentActionsCell(agent) {
+  const cell = document.createElement("td");
+  const actions = document.createElement("div");
+  actions.className = "admin-actions admin-actions--agent";
+  const deleteButton = document.createElement("button");
+  deleteButton.type = "button";
+  deleteButton.className = "admin-action admin-action--delete";
+  deleteButton.textContent = "Delete";
+
+  deleteButton.addEventListener("click", async () => {
+    const confirmed = window.confirm(
+      `Delete the agent account for ${agent.full_name || agent.email || "this agent"}? Referred loan applications will remain saved.`
+    );
+
+    if (!confirmed) return;
+
+    deleteButton.disabled = true;
+    deleteButton.textContent = "Deleting...";
+
+    try {
+      await window.MTLApi.deleteAgent(agent.id);
+      const agentsData = await window.MTLApi.agents();
+      renderReferralSettings(agentsData.settings);
+      renderAgents(agentsData.agents || []);
+    } catch (error) {
+      deleteButton.disabled = false;
+      deleteButton.textContent = "Delete";
+      window.alert(error.message);
+    }
+  });
+
+  actions.appendChild(deleteButton);
+  cell.appendChild(actions);
+  return cell;
 }
 
 async function refreshAdminData() {

@@ -8,6 +8,7 @@ const {
   updateLoanApplicationStatus,
   updateReferralSettings,
   deleteLoanApplication,
+  deleteAgent,
 } = require("../db");
 const { sendAdminMessage, sendLoanDecisionNotice } = require("../mail");
 const fs = require("fs");
@@ -48,6 +49,20 @@ router.get("/agents", async (req, res, next) => {
   try {
     const data = await getAgentsWithReferralStats();
     res.json(data);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.delete("/agents/:id", async (req, res, next) => {
+  try {
+    const agent = await deleteAgent(req.params.id);
+
+    if (!agent) {
+      return res.status(404).json({ message: "Agent account was not found." });
+    }
+
+    res.json({ ok: true, message: "Agent account was deleted.", agent });
   } catch (error) {
     next(error);
   }

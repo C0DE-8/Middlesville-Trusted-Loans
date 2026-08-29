@@ -111,6 +111,12 @@
     agents() {
       return request({ url: "/api/admin/agents", method: "GET" });
     },
+    deleteAgent(id) {
+      return request({
+        url: `/api/admin/agents/${id}`,
+        method: "DELETE",
+      });
+    },
     updateReferralSettings(requiredApprovedApplications, payoutAmount) {
       return request({
         url: "/api/admin/referral-settings",

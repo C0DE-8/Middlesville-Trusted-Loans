@@ -32,6 +32,44 @@
 
     <!-- site styles -->
     <link rel="stylesheet" href="assets/css/easilon.css?v=20260829-1" />
+    <style>
+        .telegram-widget {
+            position: fixed !important;
+            left: 24px !important;
+            bottom: 24px !important;
+            z-index: 99999 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 58px !important;
+            height: 58px !important;
+            border-radius: 50% !important;
+            color: #ffffff !important;
+            background: #229ed9 !important;
+            box-shadow: 0 14px 30px rgba(34, 158, 217, 0.32) !important;
+            text-decoration: none !important;
+        }
+
+        .telegram-widget:hover {
+            color: #ffffff !important;
+            background: #168ac0 !important;
+            transform: translateY(-3px);
+        }
+
+        .telegram-widget i {
+            font-size: 28px;
+            line-height: 1;
+        }
+
+        @media (max-width: 575px) {
+            .telegram-widget {
+                left: 18px !important;
+                bottom: 18px !important;
+                width: 52px !important;
+                height: 52px !important;
+            }
+        }
+    </style>
 </head>
 
 <body class="custom-cursor">
@@ -428,8 +466,8 @@
     </div>
     <!-- /.search-popup -->
 
-    <a href="https://t.me/Middlesville_Trusted_Loans" class="telegram-widget" target="_blank" rel="noopener" aria-label="Chat with Middlesville Trusted Loans on Telegram">
-        <i class="fab fa-telegram-plane" aria-hidden="true"></i>
+    <a href="https://t.me/Middlesville_Trusted_Loans" class="telegram-widget" target="_blank" rel="noopener" aria-label="Chat with Middlesville Trusted Loans on Telegram" title="Chat on Telegram">
+        <i class="fab fa-telegram" aria-hidden="true"></i>
     </a>
 
     <a href="#" data-target="html" class="scroll-to-target scroll-to-top">
