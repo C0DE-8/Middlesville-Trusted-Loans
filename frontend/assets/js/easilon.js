@@ -115,8 +115,25 @@
     initIdUploadPreviews(loanApplicationForm);
     initAgentReferralCode(loanApplicationForm);
 
-    loanApplicationForm.addEventListener("submit", async function (event) {
-      event.preventDefault();
+    let isLoanApplicationSubmitting = false;
+    const loanApplicationSubmitButton = loanApplicationForm.querySelector("button[type='submit']");
+
+    async function submitLoanApplication(event) {
+      if (event) {
+        event.preventDefault();
+      }
+
+      if (isLoanApplicationSubmitting) return;
+
+      if (!loanApplicationForm.checkValidity()) {
+        const message = document.getElementById("loan-application-message");
+        if (message) {
+          message.textContent = "Please complete all required fields before submitting.";
+          message.classList.add("apply-loan__form__message--error");
+        }
+        loanApplicationForm.reportValidity();
+        return;
+      }
 
       const message = document.getElementById("loan-application-message");
       const submitButton = loanApplicationForm.querySelector("button[type='submit']");
@@ -130,6 +147,7 @@
       }
 
       if (submitButton) {
+        isLoanApplicationSubmitting = true;
         submitButton.disabled = true;
         submitButton.classList.add("is-loading");
         loanApplicationForm.classList.add("is-submitting");
@@ -161,6 +179,7 @@
         }
       } finally {
         if (submitButton) {
+          isLoanApplicationSubmitting = false;
           submitButton.disabled = false;
           submitButton.classList.remove("is-loading");
           loanApplicationForm.classList.remove("is-submitting");
@@ -169,7 +188,13 @@
           }
         }
       }
-    });
+    }
+
+    loanApplicationForm.addEventListener("submit", submitLoanApplication);
+
+    if (loanApplicationSubmitButton) {
+      loanApplicationSubmitButton.addEventListener("click", submitLoanApplication);
+    }
   }
 
   function initAgentReferralCode(form) {
