@@ -24,6 +24,10 @@ body.admin-modal-open {
   overflow: hidden;
 }
 
+body.admin-menu-open {
+  overflow: hidden;
+}
+
 .admin-auth-page {
   display: grid;
   place-items: center;
@@ -196,6 +200,46 @@ body.admin-modal-open {
   display: flex;
   align-items: center;
   gap: 14px;
+}
+
+.admin-menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--admin-line);
+  border-radius: 6px;
+  background: var(--admin-white);
+  cursor: pointer;
+}
+
+.admin-menu-toggle span,
+.admin-menu-toggle::before,
+.admin-menu-toggle::after {
+  content: "";
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--admin-ink);
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.admin-menu-toggle {
+  flex-direction: column;
+  gap: 5px;
+}
+
+.admin-menu-toggle[aria-expanded="true"]::before {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.admin-menu-toggle[aria-expanded="true"] span {
+  opacity: 0;
+}
+
+.admin-menu-toggle[aria-expanded="true"]::after {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 .admin-dashboard {
@@ -661,8 +705,57 @@ body.admin-modal-open {
 
 @media (max-width: 800px) {
   .admin-header {
-    align-items: flex-start;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    align-items: center;
+    flex-direction: row;
+    padding: 14px 18px;
+  }
+
+  .admin-menu-toggle {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .admin-header__nav {
+    position: fixed;
+    top: 75px;
+    left: 16px;
+    right: 16px;
+    z-index: 101;
+    display: none;
+    align-items: stretch;
     flex-direction: column;
+    gap: 0;
+    padding: 10px;
+    background: var(--admin-white);
+    border: 1px solid var(--admin-line);
+    border-radius: 8px;
+    box-shadow: 0 22px 60px rgba(24, 32, 51, 0.22);
+  }
+
+  body.admin-menu-open .admin-header__nav {
+    display: flex;
+  }
+
+  .admin-header__nav a,
+  .admin-header__nav span,
+  .admin-header__nav button {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .admin-header__nav a,
+  .admin-header__nav span {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    border-radius: 6px;
+  }
+
+  .admin-header__nav a:hover {
+    background: #eef2f6;
   }
 
   .admin-metrics {

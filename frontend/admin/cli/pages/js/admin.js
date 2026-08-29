@@ -13,6 +13,33 @@ function clearToken() {
 let currentApplications = [];
 let currentDocumentUrl = "";
 
+function initAdminMobileMenu() {
+  const header = document.querySelector(".admin-header");
+  const nav = document.querySelector(".admin-header__nav");
+  if (!header || !nav || header.querySelector(".admin-menu-toggle")) return;
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "admin-menu-toggle";
+  button.setAttribute("aria-label", "Open admin menu");
+  button.setAttribute("aria-expanded", "false");
+  button.innerHTML = "<span></span>";
+  header.insertBefore(button, nav);
+
+  button.addEventListener("click", () => {
+    const isOpen = document.body.classList.toggle("admin-menu-open");
+    button.setAttribute("aria-expanded", String(isOpen));
+    button.setAttribute("aria-label", isOpen ? "Close admin menu" : "Open admin menu");
+  });
+
+  nav.addEventListener("click", (event) => {
+    if (!event.target.closest("a")) return;
+    document.body.classList.remove("admin-menu-open");
+    button.setAttribute("aria-expanded", "false");
+    button.setAttribute("aria-label", "Open admin menu");
+  });
+}
+
 function initLogin() {
   const form = document.getElementById("admin-login-form");
   if (!form) return;
@@ -815,6 +842,7 @@ function maskCard(value) {
 }
 
 initLogin();
+initAdminMobileMenu();
 initDashboard();
 initAgentsPage();
 initMailerPage();

@@ -15911,6 +15911,31 @@ body.boxed-wrapper .download-app-one__shape {
   right: 30px;
 }
 
+@media (max-width: 991px) {
+  .main-header__search {
+    display: none;
+  }
+
+  .mobile-nav__content .main-menu__list li > a {
+    min-height: 52px;
+    height: auto;
+    padding-top: 11px;
+    padding-bottom: 11px;
+  }
+
+  .apply-loan__form__btn {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    width: 100%;
+    min-height: 58px;
+    margin-top: 34px;
+    padding: 15px 18px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0, 205, 229, 0.22);
+  }
+}
+
 .telegram-widget {
   position: fixed;
   left: 24px;
