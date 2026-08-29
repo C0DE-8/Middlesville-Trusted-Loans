@@ -19,6 +19,10 @@
   });
 
   function getErrorMessage(error) {
+    if (error.code === "ECONNABORTED" || /timeout/i.test(error.message || "")) {
+      return "The request is taking longer than expected. Please check your connection and try again.";
+    }
+
     return error.response?.data?.message || error.message || "Request failed.";
   }
 
@@ -163,6 +167,7 @@
         url: "/api/applications",
         method: "POST",
         data: formData,
+        timeout: 120000,
       });
     },
     checkLoanStatus(email) {

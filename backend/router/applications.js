@@ -128,7 +128,7 @@ router.post(
       if (existingApplication) {
         removeUploadedApplicationFiles(req.files);
         return res.status(409).json({
-          message: "An application has already been submitted with this email address.",
+          message: "An application has already been submitted with this email address. If you tried moments ago, your first submission was likely received.",
         });
       }
 
@@ -217,7 +217,7 @@ router.post(
       removeUploadedApplicationFiles(req.files);
       if (error && error.code === "ER_DUP_ENTRY") {
         return res.status(409).json({
-          message: "An application has already been submitted with this email address.",
+          message: "An application has already been submitted with this email address. If you tried moments ago, your first submission was likely received.",
         });
       }
       next(error);

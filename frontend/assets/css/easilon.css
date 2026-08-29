@@ -15913,9 +15913,9 @@ body.boxed-wrapper .download-app-one__shape {
 
 .telegram-widget {
   position: fixed;
-  right: 24px;
-  bottom: 104px;
-  z-index: 99;
+  left: 24px;
+  bottom: 24px;
+  z-index: 9999;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -15942,8 +15942,8 @@ body.boxed-wrapper .download-app-one__shape {
 
 @media (max-width: 575px) {
   .telegram-widget {
-    right: 18px;
-    bottom: 88px;
+    left: 18px;
+    bottom: 18px;
     width: 52px;
     height: 52px;
   }
