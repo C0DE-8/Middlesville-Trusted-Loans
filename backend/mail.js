@@ -11,6 +11,8 @@ const smtpPassword = process.env.SMTP_PASSWORD;
 const smtpFrom = process.env.SMTP_FROM || smtpUser;
 const adminNoticeTo = process.env.ADMIN_NOTICE_EMAIL || smtpUser;
 const siteUrl = (process.env.SITE_URL || "https://middlesvilletrustedloans.com").replace(/\/$/, "");
+const logoUrl =
+  process.env.SITE_LOGO_URL || "https://middlesvilletrustedloans.com/assets/images/logo-dark.png";
 const templatesDir = path.resolve(__dirname, "templates", "email");
 
 function canSendMail() {
@@ -49,6 +51,14 @@ function fillTemplate(template, context) {
   return template
     .replace(/\{\{\{(\w+)\}\}\}/g, (_, key) => String(context[key] ?? ""))
     .replace(/\{\{(\w+)\}\}/g, (_, key) => escapeHtml(context[key]));
+}
+
+function formatMessageHtml(message) {
+  return escapeHtml(message)
+    .split(/\r?\n{2,}/)
+    .map((paragraph) => paragraph.replace(/\r?\n/g, "<br>"))
+    .map((paragraph) => `<p>${paragraph}</p>`)
+    .join("");
 }
 
 function formatDate(value) {
@@ -90,6 +100,23 @@ function renderEmail(title, templateName, application) {
     title,
     styles,
     content,
+    logo_url: logoUrl,
+  });
+}
+
+function renderAdminMessageEmail(title, message) {
+  const styles = loadTemplate("styles.css");
+  const contentTemplate = loadTemplate("admin-message.html");
+  const content = fillTemplate(contentTemplate, {
+    message_html: formatMessageHtml(message),
+  });
+  const base = loadTemplate("base.html");
+
+  return fillTemplate(base, {
+    title,
+    styles,
+    content,
+    logo_url: logoUrl,
   });
 }
 
@@ -161,6 +188,16 @@ function buildDecisionText(application) {
     `Submitted: ${data.submitted_at}`,
     "",
     "If you have questions about this decision, contact Middlesville Trusted Loans.",
+    "",
+    "Middlesville Trusted Loans",
+    "Email: info@middlesvilletrustedloans.com",
+    "Phone: +1(412) 228-4101",
+  ].join("\n");
+}
+
+function buildAdminMessageText(message) {
+  return [
+    message,
     "",
     "Middlesville Trusted Loans",
     "Email: info@middlesvilletrustedloans.com",
@@ -242,8 +279,29 @@ async function sendStatusCheckNotice(application) {
   return true;
 }
 
+async function sendAdminMessage({ to, subject, message }) {
+  if (!canSendMail()) {
+    console.warn("SMTP is not configured; admin message email skipped.");
+    return false;
+  }
+
+  const title = subject || "Message from Middlesville Trusted Loans";
+  const transporter = createTransporter();
+
+  await transporter.sendMail({
+    from: smtpFrom,
+    to,
+    subject: title,
+    text: buildAdminMessageText(message),
+    html: renderAdminMessageEmail(title, message),
+  });
+
+  return true;
+}
+
 module.exports = {
   sendApplicationNotices,
   sendLoanDecisionNotice,
   sendStatusCheckNotice,
+  sendAdminMessage,
 };

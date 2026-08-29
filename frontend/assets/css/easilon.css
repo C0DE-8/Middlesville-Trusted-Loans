@@ -15910,4 +15910,46 @@ body.boxed-wrapper .company-transparency-one__shape {
 body.boxed-wrapper .download-app-one__shape {
   right: 30px;
 }
+
+.telegram-widget {
+  position: fixed;
+  right: 24px;
+  bottom: 104px;
+  z-index: 99;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: #229ed9;
+  box-shadow: 0 14px 30px rgba(34, 158, 217, 0.32);
+  text-decoration: none;
+  transition: transform 180ms ease, background 180ms ease;
+}
+
+.telegram-widget:hover {
+  color: #ffffff;
+  background: #168ac0;
+  transform: translateY(-3px);
+}
+
+.telegram-widget i {
+  font-size: 28px;
+  line-height: 1;
+}
+
+@media (max-width: 575px) {
+  .telegram-widget {
+    right: 18px;
+    bottom: 88px;
+    width: 52px;
+    height: 52px;
+  }
+
+  .telegram-widget i {
+    font-size: 25px;
+  }
+}
 /*# sourceMappingURL=easilon.css.map */

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mailer | Middlesville Trusted Loans</title>
+    <link rel="stylesheet" href="../../../assets/vendors/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/admin.css?v=20260829-1">
+</head>
+<body class="admin-dashboard-page">
+    <header class="admin-header">
+        <a href="../../../index.html" class="admin-header__logo">
+            <img src="../../../assets/images/logo-dark.png" alt="Middlesville Trusted Loans" width="150">
+        </a>
+        <nav class="admin-header__nav">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="applications.html">Applications</a>
+            <a href="agents.html">Agents</a>
+            <a href="mailer.html">Mailer</a>
+            <a href="../../../index.html">View Site</a>
+            <span id="admin-name">Admin</span>
+            <button id="logout-button" type="button">Logout</button>
+        </nav>
+    </header>
+
+    <main class="admin-dashboard">
+        <section class="admin-dashboard__intro">
+            <h1>Mailer</h1>
+            <p>Send a branded email with the Middlesville Trusted Loans header, logo, and footer.</p>
+        </section>
+
+        <section class="admin-panel admin-mailer-panel">
+            <form id="admin-mailer-form" class="admin-form admin-form--mailer">
+                <label for="mailer-email">User Email</label>
+                <input id="mailer-email" name="email" type="email" placeholder="customer@example.com" autocomplete="email" required>
+
+                <label for="mailer-message">Message Body</label>
+                <textarea id="mailer-message" name="message" rows="11" placeholder="Type the message to send..." required></textarea>
+
+                <button type="submit">
+                    <span class="admin-button__spinner" aria-hidden="true"></span>
+                    <span class="admin-button__label">Send Email</span>
+                </button>
+                <p id="mailer-message-status" class="admin-form__message" aria-live="polite"></p>
+            </form>
+        </section>
+    </main>
+
+    <script src="../../../assets/vendors/axios/axios.min.js"></script>
+    <script src="../../../assets/js/axios.js?v=20260829-1"></script>
+    <script src="js/admin.js?v=20260829-1"></script>
+</body>
+</html>

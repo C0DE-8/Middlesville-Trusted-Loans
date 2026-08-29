@@ -9,11 +9,19 @@ const {
   updateReferralSettings,
   deleteLoanApplication,
 } = require("../db");
-const { sendLoanDecisionNotice } = require("../mail");
+const { sendAdminMessage, sendLoanDecisionNotice } = require("../mail");
 const fs = require("fs");
 
 const router = express.Router();
 const allowedStatuses = new Set(["pending", "approved", "rejected"]);
+
+function normalizeEmail(email) {
+  return String(email || "").trim().toLowerCase();
+}
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
 router.use(requireAdminAuth);
 
@@ -73,6 +81,39 @@ router.put("/referral-settings", async (req, res, next) => {
     });
 
     res.json({ settings });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/mailer", async (req, res, next) => {
+  try {
+    const to = normalizeEmail(req.body.email);
+    const subject = String(req.body.subject || "Message from Middlesville Trusted Loans").trim();
+    const message = String(req.body.message || "").trim();
+
+    if (!to || !message) {
+      return res.status(400).json({ message: "Recipient email and message body are required." });
+    }
+
+    if (!isValidEmail(to)) {
+      return res.status(400).json({ message: "Enter a valid recipient email address." });
+    }
+
+    if (message.length > 10000) {
+      return res.status(400).json({ message: "Message body must be 10,000 characters or less." });
+    }
+
+    if (subject.length > 180) {
+      return res.status(400).json({ message: "Subject must be 180 characters or less." });
+    }
+
+    const sent = await sendAdminMessage({ to, subject, message });
+    if (!sent) {
+      return res.status(503).json({ message: "SMTP is not configured on the server." });
+    }
+
+    res.json({ ok: true, message: "Email sent." });
   } catch (error) {
     next(error);
   }

@@ -175,6 +175,65 @@ async function initAgentsPage() {
   });
 }
 
+async function initMailerPage() {
+  const form = document.getElementById("admin-mailer-form");
+  if (!form) return;
+
+  try {
+    const me = await window.MTLApi.me();
+    setText("admin-name", me.admin.username);
+    bindAdminLogout();
+  } catch (error) {
+    clearToken();
+    window.location.href = "index.html";
+    return;
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const message = document.getElementById("mailer-message-status");
+    const submitButton = form.querySelector("button[type='submit']");
+    const submitLabel = submitButton ? submitButton.querySelector(".admin-button__label") : null;
+    const formData = new FormData(form);
+    const email = String(formData.get("email") || "").trim();
+    const body = String(formData.get("message") || "").trim();
+
+    if (message) {
+      message.textContent = "";
+      message.classList.remove("admin-form__message--success");
+    }
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.classList.add("is-loading");
+    }
+    if (submitLabel) {
+      submitLabel.textContent = "Sending";
+    }
+
+    try {
+      await window.MTLApi.sendAdminMail(email, "", body);
+      form.reset();
+      if (message) {
+        message.textContent = "Email sent.";
+        message.classList.add("admin-form__message--success");
+      }
+    } catch (error) {
+      if (message) {
+        message.textContent = error.message;
+      }
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.classList.remove("is-loading");
+      }
+      if (submitLabel) {
+        submitLabel.textContent = "Send Email";
+      }
+    }
+  });
+}
+
 function renderReferralSettings(settings) {
   if (!settings) return;
 
@@ -721,3 +780,4 @@ function maskCard(value) {
 initLogin();
 initDashboard();
 initAgentsPage();
+initMailerPage();

@@ -573,6 +573,9 @@
           required: true,
           email: true
         },
+        phone: {
+          required: true
+        },
         message: {
           required: true
         },
@@ -599,6 +602,7 @@
             $result.html('<p class="mc-message">' + (response.message || "Your message was sent successfully.") + "</p>");
             $form.find('input[type="text"]').val("");
             $form.find('input[type="email"]').val("");
+            $form.find('input[type="tel"]').val("");
             $form.find("textarea").val("");
           })
           .catch(function (error) {

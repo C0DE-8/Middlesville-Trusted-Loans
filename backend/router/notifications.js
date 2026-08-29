@@ -38,11 +38,12 @@ router.post("/contact", async (req, res, next) => {
   try {
     const name = String(req.body.name || "").trim();
     const email = normalizeEmail(req.body.email);
+    const phone = String(req.body.phone || "").trim();
     const subject = String(req.body.subject || "Website message").trim();
     const message = String(req.body.message || "").trim();
 
-    if (!name || !email || !message) {
-      return res.status(400).json({ message: "Name, email, and message are required." });
+    if (!name || !email || !phone || !message) {
+      return res.status(400).json({ message: "Name, email, phone number, and message are required." });
     }
 
     sendTelegramAlert(
@@ -50,6 +51,7 @@ router.post("/contact", async (req, res, next) => {
         "New contact message",
         `Name: ${name}`,
         `Email: ${email}`,
+        `Phone: ${phone}`,
         `Subject: ${subject}`,
         `Message: ${message}`,
       ].join("\n")

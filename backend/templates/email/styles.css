@@ -21,9 +21,19 @@ body {
 }
 
 .email-header {
-  background: #143d59;
+  background: #ffffff;
   padding: 28px 30px;
-  color: #ffffff;
+  color: #143d59;
+  border-top: 5px solid #00a8bd;
+  border-bottom: 1px solid #dce4ef;
+}
+
+.email-header img {
+  display: block;
+  width: 170px;
+  max-width: 100%;
+  height: auto;
+  margin: 0 0 18px;
 }
 
 .email-header h1 {
@@ -34,7 +44,7 @@ body {
 
 .email-header p {
   margin: 8px 0 0;
-  color: #cde1ee;
+  color: #627189;
   font-size: 14px;
 }
 

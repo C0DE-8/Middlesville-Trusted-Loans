@@ -114,6 +114,13 @@
         data: { requiredApprovedApplications, payoutAmount },
       });
     },
+    sendAdminMail(email, subject, message) {
+      return request({
+        url: "/api/admin/mailer",
+        method: "POST",
+        data: { email, subject, message },
+      });
+    },
     updateApplicationStatus(id, status) {
       return request({
         url: `/api/admin/applications/${id}/status`,
