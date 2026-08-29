@@ -137,7 +137,7 @@
   }
 
   function createReferralUrl(code) {
-    return `${window.location.origin}${window.location.pathname.replace(/\/pages\/dashboard\.html$/, "")}/apply-loan.html?ref=${encodeURIComponent(code)}`;
+    return `${window.location.origin}/apply-loan.html?ref=${encodeURIComponent(code)}`;
   }
 
   function renderAgentApplications(applications) {
